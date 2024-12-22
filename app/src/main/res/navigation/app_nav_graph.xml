@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_nav_graph"
+    app:startDestination="@id/authenticationFragment">
+
+    <fragment
+        android:id="@+id/authenticationFragment"
+        android:name="com.solt.thiochat.ui.AuthenticationFragment"
+        android:label="AuthenticationFragment" >
+        <action
+            android:id="@+id/action_authenticationFragment_to_friendsPage"
+            app:destination="@id/friendsPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/friendsPage"
+        android:name="com.solt.thiochat.ui.FriendsPage"
+        android:label="FriendsPage" />
+</navigation>
