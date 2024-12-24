@@ -1,4 +1,4 @@
-package com.solt.thiochat.ui
+package com.solt.thiochat.ui.pages
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.auth.FirebaseUser
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.databinding.AuthPageBinding

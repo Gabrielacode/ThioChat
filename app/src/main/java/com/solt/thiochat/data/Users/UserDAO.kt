@@ -6,6 +6,7 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.solt.thiochat.data.Authentication
 import com.solt.thiochat.data.OperationResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -23,8 +24,8 @@ class UserDAO @Inject constructor(){
               val result = fireStore.collection(USERS_COLLECTION).document(userId).set(user).await()
              true
           }catch (e:Exception){
-              Log.i("Error",e.toString())
-              false
+              if(e is CancellationException) throw e
+              else false
           }
 
         }
@@ -33,9 +34,9 @@ class UserDAO @Inject constructor(){
     suspend fun getCurrentSignedInUserDetails(userId:String):OperationResult{
         return withContext(Dispatchers.IO){
             try {
-                Log.i("Errorr",userId.toString())
+
                 val result = fireStore.collection(USERS_COLLECTION).document(userId).get().await()
-                Log.i("Errorr",result.toString())
+
                 val user = result.toObject<UserModel>()
 
                 if(user == null){
@@ -44,8 +45,8 @@ class UserDAO @Inject constructor(){
                     OperationResult.Success(user)
                 }
             }catch (e:Exception) {
-                Log.i("Errorr",e.toString())
-                OperationResult.Failure(e)}
+            if(e is CancellationException) throw e
+            else OperationResult.Failure(e)}
 
         }
 

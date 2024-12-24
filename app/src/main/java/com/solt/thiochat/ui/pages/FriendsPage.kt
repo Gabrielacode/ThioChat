@@ -1,4 +1,4 @@
-package com.solt.thiochat.ui
+package com.solt.thiochat.ui.pages
 
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +13,6 @@ import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.databinding.FriendsPageBinding
 import com.solt.thiochat.ui.adapters.FriendsAdapter
-import com.solt.thiochat.ui.viewmodel.AuthenticationViewModel
 import com.solt.thiochat.ui.viewmodel.FriendsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -33,11 +33,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
+@Singleton
 class Authentication  @Inject constructor( ) {
     private val currentUser : FirebaseUser?
         get() = auth.currentUser
+    private val currentUserModel:UserModel?
+        get() {
+            return if(currentUser == null) null
+            else UserModel(currentUser!!.uid,currentUser!!.displayName?:"Random User ${currentUser!!.uid.substring(0..4)}")
+        }
     val auth = Firebase.auth
     @Inject lateinit var fireStore:FirebaseFirestore
 
@@ -49,6 +55,9 @@ class Authentication  @Inject constructor( ) {
     }
     fun getCurrentUserDetails():FirebaseUser?{
         return currentUser
+    }
+    fun getCurrentUserAsModel():UserModel?{
+        return currentUserModel
     }
     fun isUserVerified():Boolean{
        return (isUserSigned() && currentUser?.isEmailVerified == true)

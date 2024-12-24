@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,24 +29,28 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        StrictMode.setThreadPolicy(
-            StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build()
-        )
-        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
+//        StrictMode.setThreadPolicy(
+//            StrictMode.ThreadPolicy.Builder()
+//                .detectAll()
+//                .penaltyLog()
+//                .build()
+//        )
+//        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
+        //Bind the navBar to the Nav Controller
+        binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener{controller,destination,bundle,->
             when(destination.id){
                 R.id.authenticationFragment->{
                     binding.bottomNavigationView.visibility = View.GONE
                 }
+                else-> binding.bottomNavigationView.visibility = View.VISIBLE
             }
         }
+
 
     }
     fun showMessageSuccess(message:String){

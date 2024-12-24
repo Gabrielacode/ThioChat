@@ -4,6 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.data.Users.USERS_COLLECTION
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,8 @@ class FriendsDao @Inject constructor() {
                   FRIENDS_COLLECTION).document(friend.userId).set(friend).await()
                 OperationResult.Success("Added Friend Successfully")
             } catch (e: Exception) {
-                OperationResult.Failure(e)
+                if(e is CancellationException) throw e
+                else OperationResult.Failure(e)
             }
         }
     }

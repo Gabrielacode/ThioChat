@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/authenticationFragment"
-        android:name="com.solt.thiochat.ui.AuthenticationFragment"
+        android:name="com.solt.thiochat.ui.pages.AuthenticationFragment"
         android:label="AuthenticationFragment" >
         <action
             android:id="@+id/action_authenticationFragment_to_friendsPage"
@@ -14,6 +14,10 @@
     </fragment>
     <fragment
         android:id="@+id/friendsPage"
-        android:name="com.solt.thiochat.ui.FriendsPage"
+        android:name="com.solt.thiochat.ui.pages.FriendsPage"
         android:label="FriendsPage" />
+    <fragment
+        android:id="@+id/groupsPage"
+        android:name="com.solt.thiochat.ui.pages.GroupsPage"
+        android:label="GroupsPage" />
 </navigation>
