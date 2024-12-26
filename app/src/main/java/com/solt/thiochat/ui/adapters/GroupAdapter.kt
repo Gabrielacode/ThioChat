@@ -25,7 +25,7 @@ val groupDiffUtil = object :DiffUtil.ItemCallback<GroupDisplayModel>(){
     }
 
 }
-class GroupAdapter:ListAdapter<GroupDisplayModel,GroupAdapter.GroupViewHolder>(groupDiffUtil) {
+class GroupAdapter( val onGroupClicked:(GroupDisplayModel)->Unit):ListAdapter<GroupDisplayModel,GroupAdapter.GroupViewHolder>(groupDiffUtil) {
     class GroupViewHolder(val binding: GroupItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
@@ -44,6 +44,9 @@ class GroupAdapter:ListAdapter<GroupDisplayModel,GroupAdapter.GroupViewHolder>(g
             if (groupColorHex in (android.graphics.Color.BLACK .. android.graphics.Color.DKGRAY)){
                 groupName.setTextColor(android.graphics.Color.WHITE)
             }else groupName.setTextColor(android.graphics.Color.BLACK)
+            root.setOnClickListener {
+               onGroupClicked(groupItem)
+            }
         }
     }
 

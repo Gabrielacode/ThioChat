@@ -19,5 +19,13 @@
     <fragment
         android:id="@+id/groupsPage"
         android:name="com.solt.thiochat.ui.pages.GroupsPage"
-        android:label="GroupsPage" />
+        android:label="GroupsPage" >
+        <action
+            android:id="@+id/action_groupsPage_to_groupMessagesPage"
+            app:destination="@id/groupMessagesPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupMessagesPage"
+        android:name="com.solt.thiochat.ui.pages.GroupMessagesPage"
+        android:label="GroupMessagesPage" />
 </navigation>

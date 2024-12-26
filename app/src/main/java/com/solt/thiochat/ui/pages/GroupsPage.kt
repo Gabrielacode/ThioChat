@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class GroupsPage:Fragment() {
     lateinit var binding: ExplorePageBinding
-    val groupAdapter = GroupAdapter()
+
     val groupViewModel :GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(R.id.app_nav_graph)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +38,10 @@ class GroupsPage:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val activity = requireActivity() as MainActivity
+        val groupAdapter = GroupAdapter{
+            groupViewModel.selectedGroup = it
+          findNavController().navigate(R.id.action_groupsPage_to_groupMessagesPage)
+        }
         binding.listOfGroups.apply {
             layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             adapter = groupAdapter

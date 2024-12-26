@@ -44,9 +44,10 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener{controller,destination,bundle,->
             when(destination.id){
-                R.id.authenticationFragment->{
+                R.id.authenticationFragment , R.id.groupMessagesPage->{
                     binding.bottomNavigationView.visibility = View.GONE
                 }
+
                 else-> binding.bottomNavigationView.visibility = View.VISIBLE
             }
         }
