@@ -15,6 +15,7 @@ import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.data.Groups.GroupInfoModel
 import com.solt.thiochat.databinding.ExplorePageBinding
+import com.solt.thiochat.databinding.GroupPageBinding
 import com.solt.thiochat.ui.adapters.GroupAdapter
 import com.solt.thiochat.ui.viewmodel.GroupsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GroupsPage:Fragment() {
-    lateinit var binding: ExplorePageBinding
+    lateinit var binding: GroupPageBinding
 
     val groupViewModel :GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(R.id.app_nav_graph)
     override fun onCreateView(
@@ -31,12 +32,13 @@ class GroupsPage:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = ExplorePageBinding.inflate(inflater,container,false)
+        binding = GroupPageBinding.inflate(inflater,container,false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val activity = requireActivity() as MainActivity
         val groupAdapter = GroupAdapter{
             groupViewModel.selectedGroup = it
@@ -55,11 +57,10 @@ class GroupsPage:Fragment() {
         }
 
         binding.addGroup.setOnClickListener {
-
-            groupViewModel.addGroup(GroupInfoModel("Churchill Group",Color.MAGENTA.toString()),{activity.showMessageSuccess(it)}){
-                activity.showMessageFailure(it)
-            }
+            findNavController().navigate(R.id.action_groupsPage_to_addGroupDialog)
         }
 
+
     }
+
 }

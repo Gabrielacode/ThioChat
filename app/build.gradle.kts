@@ -39,6 +39,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
 }
 
 dependencies {
@@ -74,6 +75,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
+    //Colour picker view
+    implementation ("com.github.skydoves:colorpickerview:2.3.0")
 }
 kapt {
     correctErrorTypes = true

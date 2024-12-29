@@ -20,10 +20,11 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.solt.thiochat.data.Friends.FRIENDS_COLLECTION
+
 import com.solt.thiochat.data.Friends.FriendModel
-import com.solt.thiochat.data.Friends.FriendsDao
 import com.solt.thiochat.data.Users.USERS_COLLECTION
-import com.solt.thiochat.data.Users.UserDAO
+
+
 import com.solt.thiochat.data.Users.UserModel
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -110,23 +111,30 @@ class Authentication  @Inject constructor( ) {
        }
    suspend fun signInWithGoogle(context: Context):OperationResult{
        return withContext(Dispatchers.IO) {
-           val credentialResult = getGoogleCredentialIdTokenFromUser(context)
-           when (credentialResult) {
-               is OperationResult.Failure ->  credentialResult
-               is OperationResult.Loading -> credentialResult
-               is OperationResult.Success<*> -> {
-                   val credentialData = credentialResult.data as GoogleIdTokenCredential
-                   val firebaseGoogleAuthCredential =
-                       GoogleAuthProvider.getCredential(credentialData.idToken, null)
-                   val result = auth.signInWithCredential(firebaseGoogleAuthCredential).await()
-                   if (result.user != null) {
-                       val isUserAddedBefore = result.additionalUserInfo?.isNewUser
-                       if (isUserAddedBefore == true){
-                         onNewUser(result.user!!.uid,result.user!!.displayName)
-                       }else {OperationResult.Success("User is successfully signed up")}
-                   } else OperationResult.Failure(IllegalStateException("User couldn't sign in , Try again"))
-               }
+           try {
+               val credentialResult = getGoogleCredentialIdTokenFromUser(context)
+               when (credentialResult) {
+                   is OperationResult.Failure -> credentialResult
+                   is OperationResult.Loading -> credentialResult
+                   is OperationResult.Success<*> -> {
+                       val credentialData = credentialResult.data as GoogleIdTokenCredential
+                       val firebaseGoogleAuthCredential =
+                           GoogleAuthProvider.getCredential(credentialData.idToken, null)
+                       val result = auth.signInWithCredential(firebaseGoogleAuthCredential).await()
+                       if (result.user != null) {
+                           val isUserAddedBefore = result.additionalUserInfo?.isNewUser
+                           if (isUserAddedBefore == true) {
+                               onNewUser(result.user!!.uid, result.user!!.displayName)
+                           } else {
+                               OperationResult.Success("User is successfully signed up")
+                           }
+                       } else OperationResult.Failure(IllegalStateException("User couldn't sign in , Try again"))
+                   }
 
+               }
+           }catch (e:Exception){
+               if(e is CancellationException) throw e
+               else return@withContext OperationResult.Failure(e)
            }
        }
    }

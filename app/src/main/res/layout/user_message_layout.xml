@@ -4,13 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="8dp"
+    >
     <LinearLayout
+        android:id="@+id/chat_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="12dp"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:background="@drawable/round_corner_for_chat">
 
         <TextView
             android:id="@+id/user_name"
@@ -20,6 +23,10 @@
             android:layout_marginBottom="8dp"
             android:textStyle="bold"
             android:textSize="18sp"/>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            app:dividerColor="?attr/colorPrimary"/>
 
         <TextView
             android:id="@+id/message_text"

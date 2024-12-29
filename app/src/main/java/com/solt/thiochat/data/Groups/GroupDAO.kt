@@ -5,6 +5,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
+import com.solt.thiochat.data.Groups.Request.GROUP_REQUEST_COLLECTION
+import com.solt.thiochat.data.Groups.Request.GroupRequestModel
+import com.solt.thiochat.data.Groups.Request.GroupRequestsDAO
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.data.Users.UserModel
 import kotlinx.coroutines.CancellationException
@@ -26,6 +29,30 @@ const val GROUP_COLLECTION = "groups"
 const val GROUP_MEMBERS_COLLECTION = "group_members"
 class GroupDAO @Inject constructor() {
   @Inject lateinit var firestore: FirebaseFirestore
+  @Inject lateinit var groupRequestsDAO: GroupRequestsDAO
+    suspend fun checkIfUserIsAdmin(userModel: UserModel, groupModel: GroupDisplayModel, onFailure:(String)->Unit):Boolean {
+       return withContext(Dispatchers.IO) {
+            try {
+                val groupMembersCollection =
+                    firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
+                        .collection(
+                            GROUP_MEMBERS_COLLECTION
+                        ).document(userModel.userId)
+                val isUserAdminResult = groupMembersCollection.get().await()
+                if (isUserAdminResult.exists()) {
+                    val memberModel = isUserAdminResult.toObject<GroupMemberModel>()
+                    if (Role.fromString(memberModel?.role) == Role.ADMIN) return@withContext true
+                    else return@withContext false
+                } else return@withContext false
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                else {
+                    onFailure(e.message ?: "Error")
+                    return@withContext false
+                }
+            }
+        }
+    }
 
     suspend fun createGroup( creator:UserModel,groupInfoModel: GroupInfoModel):OperationResult{
     //Only create if it doesn't exist
@@ -74,7 +101,7 @@ class GroupDAO @Inject constructor() {
 
                         val documentId = i.id
                         val documentInfoModel = i.toObject<GroupInfoModel>()
-                        listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour))
+                        listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour,documentInfoModel.modeOfAcceptance))
                     }
 
                     //Send it
@@ -105,10 +132,10 @@ class GroupDAO @Inject constructor() {
                              val getUserTask = firestore.collection(GROUP_COLLECTION).document(i.id).collection(
                                  GROUP_MEMBERS_COLLECTION
                              ).document(user.userId).get().await()
-                              if (getUserTask != null){
+                              if (getUserTask != null && getUserTask.exists()){
                                   val memberModel = getUserTask.toObject<GroupMemberModel>()
                                   if(memberModel?.userId == user.userId){
-                                     listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour))
+                                     listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour, documentInfoModel.modeOfAcceptance))
                                   }
                                   }
                               }
@@ -123,23 +150,40 @@ class GroupDAO @Inject constructor() {
                 groupCollectionObserver.remove() }
         }
     }
-   suspend fun addUserToGroup(member : GroupMemberModel, groupModel: GroupDisplayModel):OperationResult {
+
+   suspend fun addUserToGroup(user :UserModel, groupModel: GroupDisplayModel):OperationResult {
+       //Do we need to update it to contain the invitations or make a separate method
+       //For now i will update it
        return withContext(Dispatchers.IO) {
            try {
-               val groupMemberCollection =
-                   firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
-                       .collection(
-                           GROUP_MEMBERS_COLLECTION
-                       )
-               val addMemberResult = groupMemberCollection.add(member).await()
-               if (addMemberResult != null) {
-                   return@withContext OperationResult.Success("Sucessfully added user as member")
-               } else return@withContext OperationResult.Failure(IllegalStateException("Couldn't add user"))
+               val groupDocRef = firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
+               val groupMemberCollection = firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
+                       .collection(GROUP_MEMBERS_COLLECTION)
+               val groupRequestsCollection =  firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
+                   .collection(GROUP_REQUEST_COLLECTION)
+               //Check if the group mode of acceptance is NONE or REQUEST
+               val mode = ModeOfAcceptance.fromString(groupModel.modeOfAcceptance)
+               if (mode == null) return@withContext OperationResult.Failure(IllegalStateException("Couldn't determine mode of acceptance"))
+               when(mode){
+                   ModeOfAcceptance.NONE ->{
+                       //Just add the user directly
+                       val member = GroupMemberModel(user.userId,user.userName,Role.MEMBER.toString())
+                       val result  = groupMemberCollection.document(member.userId).set(member).await()
+                       return@withContext OperationResult.Success("Successfully added user")
 
+                   }
+                   ModeOfAcceptance.REQUEST -> {
+                       //Send a request
+                       val request = GroupRequestModel(user)
+                       val result = groupRequestsDAO.addGroupRequest(request,groupModel)
+                       return@withContext  result
+                   }
+               }
            } catch (e: Exception) {
                if (e is CancellationException) throw e
                else return@withContext OperationResult.Failure(e)
            }
        }
    }
+
 }

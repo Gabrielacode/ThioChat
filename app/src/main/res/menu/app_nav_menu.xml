@@ -4,4 +4,5 @@
     <item
         android:id="@+id/friendsPage" android:title="Friends" />
     <item android:id="@+id/groupsPage" android:title="Groups"/>
+    <item android:id="@+id/explorePage" android:title="Explore"/>
 </menu>

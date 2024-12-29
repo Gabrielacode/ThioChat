@@ -20,7 +20,7 @@ class GroupMessageDAO @Inject constructor() {
 
     fun getGroupMessagesOfGroup(group :GroupDisplayModel): Flow<List<GroupMessageModel>>{
         val groupMessagesCollectionRef = firestore.collection(GROUP_COLLECTION).document(group.documentId).collection(
-            GROUP_MESSAGES_COLLECTION)
+            GROUP_MESSAGES_COLLECTION).orderBy("timeStamp")
         //We will get the flow of messages using the new snapshots method which returns a flow of the document snapshots
         val flowOfMessages = groupMessagesCollectionRef.snapshots().map { it.toObjects<GroupMessageModel>() }
         return flowOfMessages

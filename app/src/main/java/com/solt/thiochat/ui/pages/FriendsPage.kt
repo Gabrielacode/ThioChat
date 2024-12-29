@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
@@ -21,7 +22,7 @@ class FriendsPage: Fragment() {
     val friendsViewModel:FriendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
 
     lateinit var binding: FriendsPageBinding
-    val friendAdapter = FriendsAdapter()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,6 +34,10 @@ class FriendsPage: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val friendAdapter = FriendsAdapter{
+            friendsViewModel.selectedFriend = it
+            findNavController().navigate(R.id.action_friendsPage_to_friendMessagePage)
+        }
         //Should we check whether the user is signed in again
     binding.listOfFriends.apply {
         layoutManager = LinearLayoutManager(requireActivity())
@@ -55,6 +60,9 @@ class FriendsPage: Fragment() {
             }?.collectLatest {
                 friendAdapter.submitList(it)
             }
+        }
+        binding.userName.setOnClickListener {
+            findNavController().navigate(R.id.action_friendsPage_to_friendRequestPage)
         }
 
     }

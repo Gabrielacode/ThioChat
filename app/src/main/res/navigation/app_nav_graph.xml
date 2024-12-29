@@ -15,7 +15,14 @@
     <fragment
         android:id="@+id/friendsPage"
         android:name="com.solt.thiochat.ui.pages.FriendsPage"
-        android:label="FriendsPage" />
+        android:label="FriendsPage" >
+        <action
+            android:id="@+id/action_friendsPage_to_friendRequestPage"
+            app:destination="@id/friendRequestPage" />
+        <action
+            android:id="@+id/action_friendsPage_to_friendMessagePage"
+            app:destination="@id/friendMessagePage" />
+    </fragment>
     <fragment
         android:id="@+id/groupsPage"
         android:name="com.solt.thiochat.ui.pages.GroupsPage"
@@ -23,9 +30,36 @@
         <action
             android:id="@+id/action_groupsPage_to_groupMessagesPage"
             app:destination="@id/groupMessagesPage" />
+        <action
+            android:id="@+id/action_groupsPage_to_addGroupDialog"
+            app:destination="@id/addGroupDialog" />
     </fragment>
     <fragment
         android:id="@+id/groupMessagesPage"
         android:name="com.solt.thiochat.ui.pages.GroupMessagesPage"
-        android:label="GroupMessagesPage" />
+        android:label="GroupMessagesPage" >
+        <action
+            android:id="@+id/action_groupMessagesPage_to_groupRequestsPage"
+            app:destination="@id/groupRequestsPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/explorePage"
+        android:name="com.solt.thiochat.ui.pages.ExplorePage"
+        android:label="ExplorePage" />
+    <dialog
+        android:id="@+id/addGroupDialog"
+        android:name="com.solt.thiochat.ui.pages.AddGroupDialog"
+        android:label="AddGroupDialog" />
+    <fragment
+        android:id="@+id/groupRequestsPage"
+        android:name="com.solt.thiochat.ui.pages.GroupRequestsPage"
+        android:label="GroupRequestsPage" />
+    <fragment
+        android:id="@+id/friendRequestPage"
+        android:name="com.solt.thiochat.ui.pages.FriendRequestPage"
+        android:label="FriendRequestPage" />
+    <fragment
+        android:id="@+id/friendMessagePage"
+        android:name="com.solt.thiochat.ui.pages.FriendMessagePage"
+        android:label="FriendMessagePage" />
 </navigation>
