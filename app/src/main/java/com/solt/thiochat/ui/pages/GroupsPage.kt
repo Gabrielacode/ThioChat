@@ -51,7 +51,7 @@ class GroupsPage:Fragment() {
         //Listen for groups
         viewLifecycleOwner.lifecycleScope.launch {
             groupViewModel.getGroupsUserIsIn { activity.showMessageFailure(it) }?.collectLatest {
-             Log.i("Error",it.toString())
+             Log.i("Groups",it.toString())
                 groupAdapter.submitList(it)
             }
         }

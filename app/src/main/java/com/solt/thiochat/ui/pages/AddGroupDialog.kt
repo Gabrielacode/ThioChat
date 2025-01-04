@@ -1,6 +1,7 @@
 package com.solt.thiochat.ui.pages
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -46,7 +47,10 @@ class AddGroupDialog: DialogFragment() {
         //Listen to the color from the selector and change the background accordingly
         viewLifecycleOwner.lifecycleScope.launch {
             listenForFlowOfColours().collectLatest {
-                binding.root.setBackgroundColor(it.color)
+                val backgroundDrawable = binding.mainLayout.background as GradientDrawable
+                backgroundDrawable.apply {
+                    colors = intArrayOf(it.color,it.color)
+                }
                 //We might check whether it is light and dark and change the text color
                 val luminance = ColorUtils.calculateLuminance(it.color)
                 binding.groupName.apply{

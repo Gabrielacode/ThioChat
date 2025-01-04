@@ -1,14 +1,29 @@
 package com.solt.thiochat.ui.adapters
 
 
+import android.graphics.BlurMaskFilter
+import android.graphics.Color
+import android.graphics.MaskFilter
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.SpannedString
 import android.text.format.DateFormat
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.ImageSpan
+import android.text.style.MaskFilterSpan
+import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.text.getSpans
+import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -70,10 +85,15 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
             userName.text = message.userName
             //We need to format the date to show the year the month and maybe the day and hour and second
             val time = message.timeStamp
-            val formatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG)
+            val formatter = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT)
             val dateString =  if (time != null)formatter.format(time) else "No Date"
             timeSent.text = dateString
             messageText.text = message.text
+            //We are going to use spannable string
+
+
+            //By setting the buffer type we can edit the span without editing and redrawing the text
+
             //We will be using bottom dialog sheet
             val requestBinding = SendFriendRequestLayoutBinding.inflate(LayoutInflater.from(root.context))
             val bottomModalDialog = BottomSheetDialog(root.context).apply {
@@ -102,7 +122,7 @@ class NonUserMessageViewHolder( val fragment: Fragment,val binding: NonUserMessa
             userName.text = message.userName
             //We need to format the date to show the year the month and maybe the day and hour and second
             val time = message.timeStamp
-            val formatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG)
+            val formatter = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT)
             val dateString =  if (time != null)formatter.format(time) else "No Date"
             timeSent.text = dateString
             messageText.text = message.text

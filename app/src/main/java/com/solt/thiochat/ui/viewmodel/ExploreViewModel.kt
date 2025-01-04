@@ -9,6 +9,7 @@ import com.solt.thiochat.data.Groups.GroupDisplayModel
 import com.solt.thiochat.data.OperationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cache
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +21,7 @@ class ExploreViewModel@Inject constructor( val authentication: Authentication,va
            onFailure("Is User signed In ?" )
             return null
         }
+
         val  flowOfGroups = exploreDAO.getGroupsUserIsNotIn(userModel).catch { onFailure(it.message?:"Error") }
         return flowOfGroups
     }

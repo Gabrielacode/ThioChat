@@ -62,7 +62,7 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
              userName.text = message.userName
              messageText.text = message.text
              val time = message.timeStamp
-             val formatter = SimpleDateFormat.getTimeInstance(SimpleDateFormat.LONG)
+             val formatter = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT)
              val dateString =  if (time != null)formatter.format(time) else "No Date"
              timeSent.text = dateString
          }
@@ -74,7 +74,7 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
                 userName.text = message.userName
                 messageText.text = message.text
                 val time = message.timeStamp
-                val formatter = SimpleDateFormat.getTimeInstance(SimpleDateFormat.LONG)
+                val formatter = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT)
                 val dateString =  if (time != null)formatter.format(time) else "No Date"
                 timeSent.text = dateString
             }

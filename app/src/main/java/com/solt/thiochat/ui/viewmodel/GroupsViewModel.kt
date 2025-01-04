@@ -17,7 +17,9 @@ import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.data.Users.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,7 +34,7 @@ class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentic
             onFailure("Is User Signed In?")
             return null
         }
-        return groupsDAO.getGroupsUserIsAMember(userModel).catch { onFailure(it.message?:"Error") }
+        return groupsDAO.getGroupsUserIsAMember(userModel).catch { onFailure(it.message?:"Error") }.buffer()
     }
     fun addGroup(groupInfo : GroupInfoModel, onSuccess:(String)->Unit, onFailure: (String) -> Unit){
         viewModelScope.launch {

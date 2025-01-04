@@ -13,6 +13,7 @@ import com.solt.thiochat.data.Groups.Request.GROUP_REQUEST_COLLECTION
 import com.solt.thiochat.data.Groups.Request.GroupRequestDisplayModel
 import com.solt.thiochat.data.Groups.Request.GroupRequestModel
 import com.solt.thiochat.data.Groups.Role
+import com.solt.thiochat.data.Groups.USER_GROUP_COLLECTION
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.data.Users.USERS_COLLECTION
 import com.solt.thiochat.data.Users.UserModel
@@ -51,6 +52,7 @@ class FriendRequestDAO  @Inject constructor(){
         //This will be that when the user accepts the request
         //The friend will be added the user's friend collection and the user will be friend's friend collection
         //Then delete  the request
+
         return withContext(Dispatchers.IO){
             try {
                 val userFriendDocRef = firestore.collection(USERS_COLLECTION).document(user.userId).collection(
@@ -61,6 +63,7 @@ class FriendRequestDAO  @Inject constructor(){
                 ).document(user.userId)
                 val friendRequestDocRef = firestore.collection(USERS_COLLECTION).document(user.userId).collection(
                     FRIEND_REQUEST_COLLECTION).document(friendRequest.documentId)
+
                 val result = firestore.runBatch {
                     val userAsFriend = FriendModel(user.userId,user.userName)
                     val friendRequestAsFriend = FriendModel(friendRequest.user.userId,friendRequest.user.userName)

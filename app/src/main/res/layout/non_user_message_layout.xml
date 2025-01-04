@@ -21,11 +21,8 @@
             tools:text="TextView"
             android:layout_marginBottom="8dp"
             android:textStyle="bold"
-            android:textSize="18sp"/>
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            app:dividerColor="?attr/colorPrimary"/>
+            android:textSize="16sp"/>
+
         <TextView
             android:id="@+id/message_text"
             android:layout_width="wrap_content"

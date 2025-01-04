@@ -9,6 +9,7 @@ import com.solt.thiochat.data.Groups.Request.GROUP_REQUEST_COLLECTION
 import com.solt.thiochat.data.Groups.Request.GroupRequestModel
 import com.solt.thiochat.data.Groups.Request.GroupRequestsDAO
 import com.solt.thiochat.data.OperationResult
+import com.solt.thiochat.data.Users.USERS_COLLECTION
 import com.solt.thiochat.data.Users.UserModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,13 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.asDeferred
@@ -27,6 +35,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 const val GROUP_COLLECTION = "groups"
 const val GROUP_MEMBERS_COLLECTION = "group_members"
+const val USER_GROUP_COLLECTION = "user_groups"
 class GroupDAO @Inject constructor() {
   @Inject lateinit var firestore: FirebaseFirestore
   @Inject lateinit var groupRequestsDAO: GroupRequestsDAO
@@ -69,7 +78,7 @@ class GroupDAO @Inject constructor() {
             //Create group then
 
             //Batch write
-           val operations =  firestore.runBatch {
+            firestore.runBatch {
                 //Add the group
                val groupDocRef = groupCollection.document()
                 it.set(groupDocRef,groupInfoModel)
@@ -77,6 +86,11 @@ class GroupDAO @Inject constructor() {
                 val member = GroupMemberModel(creator.userId,creator.userName, Role.ADMIN.toString())
                 val creatorDocRef = groupDocRef.collection(GROUP_MEMBERS_COLLECTION).document(creator.userId)
                 it.set(creatorDocRef,member)
+                //We also need to add the group to the users list of groups
+                val userGroupsCollection = firestore.collection(USERS_COLLECTION).document(creator.userId)
+                    .collection(USER_GROUP_COLLECTION)
+                val groupDoc = userGroupsCollection.document(groupDocRef.id)
+                it.set(groupDoc,groupInfoModel)
 
             }.await()
          return@withContext OperationResult.Success("Successfully created group")
@@ -88,68 +102,40 @@ class GroupDAO @Inject constructor() {
     }
 }
     fun getGroups():Flow<List<GroupDisplayModel>>{
-        return callbackFlow {
-            val groupCollectionObserver = firestore.collection(GROUP_COLLECTION)
-                .addSnapshotListener { value, error ->
-                    if(error != null){
-                        return@addSnapshotListener
-                    }
-
-                    val listOfGroups = ArrayList<GroupDisplayModel>()
-                    //Groups will be accessible to everybody
-                    for(i in value!!){
-
-                        val documentId = i.id
-                        val documentInfoModel = i.toObject<GroupInfoModel>()
-                        listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour,documentInfoModel.modeOfAcceptance))
-                    }
-
-                    //Send it
-                     val sending=trySend(listOfGroups)
 
 
-                }
-            awaitClose { groupCollectionObserver.remove() }
-        }
+            val groupCollectionRef = firestore.collection(GROUP_COLLECTION)
+        val flowOfGroups = groupCollectionRef.snapshots().transform {
+            val listOfGroups = ArrayList<GroupDisplayModel>()
+            //Groups will be accessible to everybody
+            for(i in it){
+
+                val documentId = i.id
+                val documentInfoModel = i.toObject<GroupInfoModel>()
+                listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour,documentInfoModel.modeOfAcceptance))
+            }
+            emit(listOfGroups)
+    }
+        return flowOfGroups
     }
     fun getGroupsUserIsAMember(user:UserModel):Flow<List<GroupDisplayModel>>{
-        return callbackFlow {
-            val coroutineScope =  CoroutineScope(Dispatchers.IO)
-            val groupCollectionObserver = firestore.collection(GROUP_COLLECTION)
-                .addSnapshotListener { value, error ->
-                    if(error != null){
-                        return@addSnapshotListener
-                    }
-                    //Run the checking on another thread
-                  coroutineScope.launch {
-                      if (isActive) {
-                          val listOfGroups = ArrayList<GroupDisplayModel>()
-                          //Groups will be accessible to everybody
-                          for (i in value!!) {
-                              val documentId = i.id
-                              val documentInfoModel = i.toObject<GroupInfoModel>()
-                              //Search if there is a member collection of the user
-                             val getUserTask = firestore.collection(GROUP_COLLECTION).document(i.id).collection(
-                                 GROUP_MEMBERS_COLLECTION
-                             ).document(user.userId).get().await()
-                              if (getUserTask != null && getUserTask.exists()){
-                                  val memberModel = getUserTask.toObject<GroupMemberModel>()
-                                  if(memberModel?.userId == user.userId){
-                                     listOfGroups.add(GroupDisplayModel(documentId,documentInfoModel.groupName,documentInfoModel.groupColour, documentInfoModel.modeOfAcceptance))
-                                  }
-                                  }
-                              }
-                          //Send it
-                          val sending = trySend(listOfGroups)
-                      }
 
-                      }
-                  }
-            awaitClose {
-                coroutineScope.cancel()
-                groupCollectionObserver.remove() }
+        //This is another try to improve the performance now
+        //Here each user has a group subcollection that contains all groups the user is currently in
+        val userGroupsCollection = firestore.collection(USERS_COLLECTION).document(user.userId).collection(
+            USER_GROUP_COLLECTION)
+        val flowOfGroups =  userGroupsCollection.snapshots().map {
+            val listOfGroups = it.documents.mapNotNull {doc ->
+                val documentId = doc.id
+                val documentModel = doc.toObject<GroupInfoModel>()
+                if (documentModel == null) null
+                 else GroupDisplayModel(documentId,documentModel.groupName,documentModel.groupColour,documentModel.modeOfAcceptance)
+            }
+            listOfGroups
         }
-    }
+        return flowOfGroups
+           }
+
 
    suspend fun addUserToGroup(user :UserModel, groupModel: GroupDisplayModel):OperationResult {
        //Do we need to update it to contain the invitations or make a separate method
@@ -157,10 +143,10 @@ class GroupDAO @Inject constructor() {
        return withContext(Dispatchers.IO) {
            try {
                val groupDocRef = firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
-               val groupMemberCollection = firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
+               val groupMemberCollection = groupDocRef
                        .collection(GROUP_MEMBERS_COLLECTION)
-               val groupRequestsCollection =  firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
-                   .collection(GROUP_REQUEST_COLLECTION)
+               val userGroupsCollection = firestore.collection(USERS_COLLECTION).document(user.userId)
+                   .collection(USER_GROUP_COLLECTION)
                //Check if the group mode of acceptance is NONE or REQUEST
                val mode = ModeOfAcceptance.fromString(groupModel.modeOfAcceptance)
                if (mode == null) return@withContext OperationResult.Failure(IllegalStateException("Couldn't determine mode of acceptance"))
@@ -168,7 +154,16 @@ class GroupDAO @Inject constructor() {
                    ModeOfAcceptance.NONE ->{
                        //Just add the user directly
                        val member = GroupMemberModel(user.userId,user.userName,Role.MEMBER.toString())
-                       val result  = groupMemberCollection.document(member.userId).set(member).await()
+                       val memberDocRef  = groupMemberCollection.document(member.userId)
+                       val userGroupRef = userGroupsCollection.document(groupModel.documentId)
+                       val group = GroupInfoModel(groupModel.groupName,groupModel.groupColour,groupModel.modeOfAcceptance)
+
+                       firestore.runBatch {
+                           //Write to the groupmember collection
+                           it.set(userGroupRef,group)
+                           it.set(memberDocRef,member)
+
+                       }
                        return@withContext OperationResult.Success("Successfully added user")
 
                    }
@@ -185,5 +180,17 @@ class GroupDAO @Inject constructor() {
            }
        }
    }
-
+    fun searchGroupByName(name:String):Flow<List<GroupDisplayModel>>{
+        val groupCollection = firestore.collection(GROUP_COLLECTION)
+        val flowOfGroups =groupCollection.whereEqualTo("userName",name).snapshots().flowOn(Dispatchers.IO).map {
+            val listOfDocuments = it.documents.mapNotNull {document ->
+                val documentId = document.id
+                val documentModel = document.toObject<GroupInfoModel>()
+                if (documentModel!=null) GroupDisplayModel(documentId,documentModel.groupName,documentModel.groupColour,documentModel.modeOfAcceptance)
+                else null
+            }
+            listOfDocuments
+        }
+        return flowOfGroups
+    }
 }

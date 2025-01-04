@@ -25,7 +25,7 @@ class FriendMessagesDAO @Inject constructor() {
         //We will only get messages from the users friends messages subcollection
         val friendMessagesSubcollection = firestore.collection(USERS_COLLECTION).document(user.userId)
             .collection(FRIENDS_COLLECTION).document(friendModel.userId).collection(
-                FRIEND_MESSAGES_SUBCOLLECTION)
+                FRIEND_MESSAGES_SUBCOLLECTION).orderBy("timeStamp")
         val flowOfMessages = friendMessagesSubcollection.snapshots().map { it.toObjects<FriendMessageModel>() }
         return flowOfMessages
 

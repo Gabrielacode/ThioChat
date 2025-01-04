@@ -1,6 +1,8 @@
 package com.solt.thiochat.data.Friends
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.snapshots
+import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.data.Users.USERS_COLLECTION
@@ -10,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -68,5 +72,15 @@ class FriendsDao @Inject constructor() {
             }
         }
     }
-
+ fun searchFriendByName( user:UserModel,name:String):Flow<List<FriendModel>>{
+     //The idea for the query was by https://medium.com/feedflood/filter-by-search-keyword-in-cloud-firestore-query-638377bf0123
+    val friendsCollection =  firestore.collection(USERS_COLLECTION).document(user.userId).collection(
+        FRIENDS_COLLECTION)
+     val query = friendsCollection.whereGreaterThanOrEqualTo("userName",name)
+         .whereLessThan("userName",name+"z")
+     val flowOfFriends = query.snapshots().map {
+       it.toObjects<FriendModel>()
+     }
+     return flowOfFriends
+ }
 }

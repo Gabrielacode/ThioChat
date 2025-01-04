@@ -145,7 +145,7 @@ class Authentication  @Inject constructor( ) {
                 val googleIdOptionRequest = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setAutoSelectEnabled(false)
-                    .setServerClientId("*")
+                    .setServerClientId("873174742298-n7r5ca7maqk7mrlf6dkfvvtu649ufrap.apps.googleusercontent.com")
                     .build()
                 val request =
                     GetCredentialRequest.Builder().addCredentialOption(googleIdOptionRequest)

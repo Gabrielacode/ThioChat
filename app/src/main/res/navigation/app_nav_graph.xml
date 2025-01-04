@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_friendsPage_to_friendMessagePage"
             app:destination="@id/friendMessagePage" />
+        <action
+            android:id="@+id/action_friendsPage_to_friendSearchPage"
+            app:destination="@id/friendSearchPage" />
     </fragment>
     <fragment
         android:id="@+id/groupsPage"
@@ -62,4 +65,12 @@
         android:id="@+id/friendMessagePage"
         android:name="com.solt.thiochat.ui.pages.FriendMessagePage"
         android:label="FriendMessagePage" />
+    <dialog
+        android:id="@+id/friendSearchPage"
+        android:name="com.solt.thiochat.ui.pages.FriendSearchPage"
+        android:label="FriendSearchPage" >
+        <action
+            android:id="@+id/action_friendSearchPage_to_friendMessagePage"
+            app:destination="@id/friendMessagePage" />
+    </dialog>
 </navigation>

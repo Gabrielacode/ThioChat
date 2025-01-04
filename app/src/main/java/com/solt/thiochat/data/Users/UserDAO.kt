@@ -2,12 +2,16 @@ package com.solt.thiochat.data.Users
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.solt.thiochat.data.Authentication
 import com.solt.thiochat.data.OperationResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -51,4 +55,12 @@ class UserDAO @Inject constructor(){
         }
 
     }
+     fun searchUserByName(name:String): Flow<List<UserModel>>{
+         val userCollection = fireStore.collection(USERS_COLLECTION)
+         val query = userCollection.whereEqualTo("userName",name)
+         val flowOfUser = query.snapshots().flowOn(Dispatchers.IO).map {
+             it.toObjects<UserModel>()
+         }
+    return flowOfUser
+     }
 }

@@ -7,9 +7,12 @@ import com.google.firebase.firestore.toObjects
 import com.solt.thiochat.data.Groups.GROUP_COLLECTION
 import com.solt.thiochat.data.Groups.GROUP_MEMBERS_COLLECTION
 import com.solt.thiochat.data.Groups.GroupDisplayModel
+import com.solt.thiochat.data.Groups.GroupInfoModel
 import com.solt.thiochat.data.Groups.GroupMemberModel
 import com.solt.thiochat.data.Groups.Role
+import com.solt.thiochat.data.Groups.USER_GROUP_COLLECTION
 import com.solt.thiochat.data.OperationResult
+import com.solt.thiochat.data.Users.USERS_COLLECTION
 import com.solt.thiochat.data.Users.UserModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +34,7 @@ class GroupRequestsDAO @Inject constructor() {
                      firestore.collection(GROUP_COLLECTION).document(group.documentId).collection(
                          GROUP_REQUEST_COLLECTION
                      )
+
                  val result = groupRequestCollection.add(groupRequest).await()
                  if (result != null){
                      OperationResult.Success("Sent request")
@@ -43,6 +47,8 @@ class GroupRequestsDAO @Inject constructor() {
          }
     }
      //For we add the user to the members collection and delete the request
+    //In the update we will add the user to the users list of groups he is in
+
     suspend fun  acceptRequest(groupRequest: GroupRequestDisplayModel,group :GroupDisplayModel):OperationResult{
        return withContext(Dispatchers.IO){
            try {
@@ -50,10 +56,16 @@ class GroupRequestsDAO @Inject constructor() {
                    GROUP_REQUEST_COLLECTION).document(groupRequest.documentId)
                val groupMembersRef = firestore.collection(GROUP_COLLECTION).document(group.documentId).collection(
                    GROUP_MEMBERS_COLLECTION)
+               //This is the user we want to accept request his
+               val userGroupsCollection = firestore.collection(USERS_COLLECTION).document(groupRequest.userModel.userId)
+                   .collection(USER_GROUP_COLLECTION)
 
-               val result = firestore.runBatch {
+               firestore.runBatch {
                    val memberModel = GroupMemberModel(groupRequest.userModel.userId,groupRequest.userModel.userName,Role.MEMBER.toString())
                    it.set(groupMembersRef.document(memberModel.userId),memberModel)
+                   it.set(userGroupsCollection.document(group.documentId),
+                       GroupInfoModel(group.groupName,group.groupColour,group.modeOfAcceptance)
+                   )
                    it.delete(groupRequestDocRef)
                }.await()
                 return@withContext OperationResult.Success("Accepted User Request")
@@ -70,8 +82,7 @@ class GroupRequestsDAO @Inject constructor() {
            try {
                val groupRequestDocRef = firestore.collection(GROUP_COLLECTION).document(group.documentId).collection(
                    GROUP_REQUEST_COLLECTION).document(groupRequest.documentId)
-               val groupMembersRef = firestore.collection(GROUP_COLLECTION).document(group.documentId).collection(
-                   GROUP_MEMBERS_COLLECTION)
+
 
                val result = groupRequestDocRef.delete().await()
                return@withContext OperationResult.Success("Accepted User Request")

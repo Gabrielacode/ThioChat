@@ -6,4 +6,9 @@
     <color name="background_error">#240011</color>
     <color name="background_success">#0BAF01</color>
     <color name="success_green">#DEFFE0</color>
+    <color name="purple">#55286F</color>
+    <color name="light_purple">#733696</color>
+    <color name="white_purple">#F6F0FA</color>
+    <color name="blue">#3B5DA5</color>
+    <color name="light_blue">#6987C9</color>
 </resources>

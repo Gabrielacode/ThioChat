@@ -10,18 +10,21 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.color.utilities.CorePalette
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.databinding.FriendsPageBinding
 import com.solt.thiochat.ui.adapters.FriendsAdapter
 import com.solt.thiochat.ui.viewmodel.FriendsViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class FriendsPage: Fragment() {
     val friendsViewModel:FriendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
 
     lateinit var binding: FriendsPageBinding
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,30 +37,34 @@ class FriendsPage: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val activity = requireActivity() as MainActivity
         val friendAdapter = FriendsAdapter{
             friendsViewModel.selectedFriend = it
             findNavController().navigate(R.id.action_friendsPage_to_friendMessagePage)
         }
+
         //Should we check whether the user is signed in again
     binding.listOfFriends.apply {
         layoutManager = LinearLayoutManager(requireActivity())
         adapter = friendAdapter
     }
+        binding.searchButton.setOnClickListener {
+            findNavController().navigate(R.id.action_friendsPage_to_friendSearchPage)
+        }
         //Get user details
         friendsViewModel.getUserDetails({
-            Log.i("Errorr",it.toString())
+
             binding.userName.text = it.userName
         }){
-            val activity = requireActivity() as MainActivity
+
             activity.showMessageFailure(it)
         }
         //Get list of friends
         viewLifecycleOwner.lifecycleScope.launch {
 
-            friendsViewModel.getFriends {
-                val activity = requireActivity() as MainActivity
-                activity.showMessageFailure(it)
-            }?.collectLatest {
+             friendsViewModel.getFriends { activity.showMessageFailure(it) }
+                 ?.collectLatest {
+                Log.i("stateflow",it.toString())
                 friendAdapter.submitList(it)
             }
         }

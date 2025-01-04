@@ -1,5 +1,6 @@
 package com.solt.thiochat.ui.adapters
 
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,13 +16,11 @@ class ExploreAdapter(val onJoinButtonClick:(GroupDisplayModel)->Unit) : ListAdap
             binding.apply {
                 groupName.text = group.groupName
 
-                val backGroundDrawable = root.background as? GradientDrawable
-                val groupColorHex = try {
-                    group.groupColour.toColorInt()
-                } catch (e: IllegalArgumentException) {
-                    android.graphics.Color.BLUE
-                }
-                backGroundDrawable?.setColor(groupColorHex)
+                val backGroundDrawable = root.background as GradientDrawable
+                val groupColorHex =   try {
+                    Color.parseColor("#${group.groupColour}")}catch (e:IllegalArgumentException){
+                    Color.CYAN}
+                backGroundDrawable.setColor(groupColorHex)
                 if (groupColorHex in (android.graphics.Color.BLACK..android.graphics.Color.DKGRAY)) {
                     groupName.setTextColor(android.graphics.Color.WHITE)
                 } else groupName.setTextColor(android.graphics.Color.BLACK)
