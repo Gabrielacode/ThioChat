@@ -21,32 +21,39 @@ val groupDiffUtil = object :DiffUtil.ItemCallback<GroupDisplayModel>(){
         oldItem: GroupDisplayModel,
         newItem: GroupDisplayModel
     ): Boolean {
-       return oldItem == newItem
+        return newItem.groupName == oldItem.groupName && newItem.groupColour == oldItem.groupColour && newItem.modeOfAcceptance == oldItem.modeOfAcceptance && newItem.documentId == oldItem.documentId
     }
 
 }
 class GroupAdapter( val onGroupClicked:(GroupDisplayModel)->Unit):ListAdapter<GroupDisplayModel,GroupAdapter.GroupViewHolder>(groupDiffUtil) {
-    class GroupViewHolder(val binding: GroupItemBinding): RecyclerView.ViewHolder(binding.root)
+    class GroupViewHolder(val binding: GroupItemBinding,val onGroupClicked: (GroupDisplayModel) -> Unit): RecyclerView.ViewHolder(binding.root){
+        fun bind(group:GroupDisplayModel) {
+            binding.apply {
+                groupName.text = group.groupName
+                val backGroundDrawable = groupName.background as GradientDrawable
+                //We need to attach the hash symbol since it it needs
+                val groupColorHex = try {
+                    Color.parseColor("#${group.groupColour}")
+                } catch (e: IllegalArgumentException) {
+                    Color.CYAN
+                }
+                backGroundDrawable.setColor(groupColorHex)
+                //
+                root.setOnClickListener {
+                    onGroupClicked(group)
+                }
+            }
+        }}
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
         val binding = GroupItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-        return GroupViewHolder(binding)
+        return GroupViewHolder(binding,onGroupClicked)
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
-
        val groupItem = getItem(position)
-        holder.binding.apply {
-            groupName.text = groupItem.groupName
-           val backGroundDrawable =  groupName.background as GradientDrawable
-            //We need to attach the hash symbol since it it needs
-            val groupColorHex =   try {Color.parseColor("#${groupItem.groupColour}")}catch (e:IllegalArgumentException){Color.CYAN}
-             backGroundDrawable.setColor(groupColorHex)
-           //
-            root.setOnClickListener {
-               onGroupClicked(groupItem)
-            }
+        holder.bind(groupItem)
         }
     }
 
-}

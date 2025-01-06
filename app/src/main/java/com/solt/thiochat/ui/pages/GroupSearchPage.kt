@@ -3,7 +3,6 @@ package com.solt.thiochat.ui.pages
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,24 +10,22 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.internal.TextWatcherAdapter
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.databinding.SearchBottomDialogBinding
-import com.solt.thiochat.ui.adapters.FriendsAdapter
-import com.solt.thiochat.ui.viewmodel.FriendsViewModel
+import com.solt.thiochat.ui.adapters.GroupAdapter
+import com.solt.thiochat.ui.viewmodel.GroupsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FriendSearchPage:BottomSheetDialogFragment() {
-    lateinit var binding :SearchBottomDialogBinding
-    //This will be the flow of search queries
+class GroupSearchPage:BottomSheetDialogFragment() {
+    lateinit var binding : SearchBottomDialogBinding
+    //This will be the flow of search queries like in the friends search page
     val flowOfQuery = MutableStateFlow("")
-    val friendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
+    val groupViewModel by hiltNavGraphViewModels<GroupsViewModel>(R.id.app_nav_graph)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +38,6 @@ class FriendSearchPage:BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -52,34 +48,35 @@ class FriendSearchPage:BottomSheetDialogFragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-             //Set the state flow
+                //Set the state flow
                 flowOfQuery.value = s?.toString()?:""
             }
 
         }
         val activity = requireActivity() as MainActivity
-        //We will sort based on the current friend
-        val friendsAdapter = FriendsAdapter{
-            friendsViewModel.selectedFriend = it
-            findNavController().navigate(R.id.action_friendsPage_to_friendMessagePage)
+        val groupAdapter = GroupAdapter{
+            groupViewModel.selectedGroup = it
+            findNavController().navigate(R.id.action_groupSearchPage_to_groupMessagesPage)
         }
-          binding.searchBar.addTextChangedListener(textWatcher)
-          binding.listOfFriends.apply {
-              layoutManager = LinearLayoutManager(requireActivity())
-              adapter = friendsAdapter
-          }
+        binding.searchBar.addTextChangedListener(textWatcher)
+        binding.listOfFriends.apply {
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            adapter = groupAdapter
+        }
+        //This will be displayed first
         viewLifecycleOwner.lifecycleScope.launch {
-            friendsViewModel.getFriends { activity.showMessageFailure(it) }?.collectLatest {
-                friendsAdapter.submitList(it)
+            groupViewModel.getGroupsUserIsIn{ activity.showMessageFailure(it) }?.collectLatest {
+                groupAdapter.submitList(it)
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             flowOfQuery.collectLatest {
-                friendsViewModel.searchFriends(it)?.collectLatest { friends ->
-                    friendsAdapter.submitList(friends)
+                groupViewModel.searchForGroup(it)?.collectLatest { groups ->
+                    groupAdapter.submitList(groups)
 
                 }
             }
         }
+
     }
 }

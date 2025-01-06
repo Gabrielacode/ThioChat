@@ -21,19 +21,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bottomSheetDragHandleView"
-        app:navigationIcon="@drawable/search_icon"
-        app:navigationIconTint="?attr/colorPrimary"
-        app:tintNavigationIcon="true" />
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_of_friends"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:minHeight="70dp"
+        android:minHeight="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchBar" />
+        app:layout_constraintTop_toBottomOf="@+id/searchBar"
+         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

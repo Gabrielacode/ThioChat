@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_groupsPage_to_addGroupDialog"
             app:destination="@id/addGroupDialog" />
+        <action
+            android:id="@+id/action_groupsPage_to_groupSearchPage"
+            app:destination="@id/groupSearchPage" />
     </fragment>
     <fragment
         android:id="@+id/groupMessagesPage"
@@ -48,7 +51,11 @@
     <fragment
         android:id="@+id/explorePage"
         android:name="com.solt.thiochat.ui.pages.ExplorePage"
-        android:label="ExplorePage" />
+        android:label="ExplorePage" >
+        <action
+            android:id="@+id/action_explorePage_to_exploreSearchPage"
+            app:destination="@id/exploreSearchPage" />
+    </fragment>
     <dialog
         android:id="@+id/addGroupDialog"
         android:name="com.solt.thiochat.ui.pages.AddGroupDialog"
@@ -72,5 +79,21 @@
         <action
             android:id="@+id/action_friendSearchPage_to_friendMessagePage"
             app:destination="@id/friendMessagePage" />
+    </dialog>
+    <dialog
+        android:id="@+id/groupSearchPage"
+        android:name="com.solt.thiochat.ui.pages.GroupSearchPage"
+        android:label="GroupSearchPage" >
+        <action
+            android:id="@+id/action_groupSearchPage_to_groupMessagesPage"
+            app:destination="@id/groupMessagesPage" />
+    </dialog>
+    <dialog
+        android:id="@+id/exploreSearchPage"
+        android:name="com.solt.thiochat.ui.pages.ExploreSearchPage"
+        android:label="ExploreSearchPage" >
+        <action
+            android:id="@+id/action_exploreSearchPage_to_groupMessagesPage"
+            app:destination="@id/groupMessagesPage" />
     </dialog>
 </navigation>

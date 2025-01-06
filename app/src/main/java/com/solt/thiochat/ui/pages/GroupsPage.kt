@@ -44,6 +44,14 @@ class GroupsPage:Fragment() {
             groupViewModel.selectedGroup = it
           findNavController().navigate(R.id.action_groupsPage_to_groupMessagesPage)
         }
+        //The menu we will get and set the item
+        //Then we will set the item to open the search click listener when expanded
+        val menu = binding.toolbar.menu
+        val searchItem = menu.findItem(R.id.search_item).setOnMenuItemClickListener {
+            findNavController().navigate(R.id.action_groupsPage_to_groupSearchPage)
+            true
+        }
+
         binding.listOfGroups.apply {
             layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             adapter = groupAdapter

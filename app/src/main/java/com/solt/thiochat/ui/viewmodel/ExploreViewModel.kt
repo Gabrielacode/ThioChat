@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.cache
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.exp
+
 @HiltViewModel
 class ExploreViewModel@Inject constructor( val authentication: Authentication,val exploreDAO: ExploreDAO, val groupsDAO: GroupDAO):ViewModel() {
     fun getListOfGroupsForExplore(onFailure:(String)->Unit):Flow<List<GroupDisplayModel>>?{
@@ -41,5 +43,12 @@ class ExploreViewModel@Inject constructor( val authentication: Authentication,va
             }
 
         }
+    }
+    fun searchForGroups(name:String):Flow<List<GroupDisplayModel>>?{
+        val userModel = authentication.getCurrentUserAsModel()
+        if (userModel == null){
+            return null
+        }
+        return exploreDAO.searchForGroup(userModel,name)
     }
 }

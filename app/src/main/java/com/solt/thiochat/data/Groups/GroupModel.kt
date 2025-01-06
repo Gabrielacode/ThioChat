@@ -19,12 +19,35 @@ data class GroupMemberModel(
     val role:String =""
 )
 
-data class GroupDisplayModel(
+open class GroupDisplayModel(
     val documentId:String,
     val groupName:String,
     val groupColour: String,
     val modeOfAcceptance: String
-)
+){
+    class UserInGroup(
+        id:String,
+        name:String,
+        colour:String,
+        modeOfAcceptance: String
+    ):GroupDisplayModel(id,name,colour,modeOfAcceptance)
+    class UserNotInGroup(
+        id:String,
+        name:String,
+        colour:String,
+        modeOfAcceptance: String
+    ):GroupDisplayModel(id,name,colour,modeOfAcceptance)
+    //We are going to overide the equals funtion
+    //Lets see
+    override fun equals(other: Any?): Boolean {
+        //We will return
+        return  if(other is GroupDisplayModel){
+            this.documentId == other.documentId && this.groupName == other.groupName && this.groupColour == other.groupColour && this.modeOfAcceptance == other.modeOfAcceptance
+        }
+        else super.equals(other)
+    }
+}
+//It will have subclasses
 enum class Role(val title:String){
 ADMIN("admin"),MEMBER("member");
 

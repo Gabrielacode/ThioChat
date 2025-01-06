@@ -51,6 +51,13 @@ class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentic
            }
         }
     }
+    fun searchForGroup(name:String):Flow<List<GroupDisplayModel>>?{
+        val userModel = authentication.getCurrentUserAsModel()
+        if(userModel == null){
+            return null
+        }
+        return groupsDAO.searchGroupUserInByName(userModel,name)
+    }
 
     fun getGroupsMessagesOfSelectedGroup(onFailure: (String) -> Unit):Flow<List< GroupMessageModel>>?{
         val currentUserModel = authentication.getCurrentUserAsModel()

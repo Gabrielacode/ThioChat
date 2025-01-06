@@ -180,16 +180,21 @@ class GroupDAO @Inject constructor() {
            }
        }
    }
-    fun searchGroupByName(name:String):Flow<List<GroupDisplayModel>>{
+    fun searchGroupUserInByName( user:UserModel , name:String):Flow<List<GroupDisplayModel>>{
         val groupCollection = firestore.collection(GROUP_COLLECTION)
-        val flowOfGroups =groupCollection.whereEqualTo("userName",name).snapshots().flowOn(Dispatchers.IO).map {
-            val listOfDocuments = it.documents.mapNotNull {document ->
-                val documentId = document.id
-                val documentModel = document.toObject<GroupInfoModel>()
-                if (documentModel!=null) GroupDisplayModel(documentId,documentModel.groupName,documentModel.groupColour,documentModel.modeOfAcceptance)
-                else null
+        val userGroupsCollection = firestore.collection(USERS_COLLECTION).document(user.userId).collection(
+            USER_GROUP_COLLECTION)
+        //Thois is the same method used in the friend dao
+        val query = userGroupsCollection.whereGreaterThanOrEqualTo("groupName",name)
+            .whereLessThan("groupName",name+"z")
+        val flowOfGroups = query.snapshots().map {
+            val listOfGroups = it.documents.mapNotNull {doc ->
+                val documentId = doc.id
+                val documentModel = doc.toObject<GroupInfoModel>()
+                if (documentModel == null) null
+                else GroupDisplayModel(documentId,documentModel.groupName,documentModel.groupColour,documentModel.modeOfAcceptance)
             }
-            listOfDocuments
+            listOfGroups
         }
         return flowOfGroups
     }
