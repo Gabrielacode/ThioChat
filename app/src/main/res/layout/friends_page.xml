@@ -5,34 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="match_parent"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/user_menu"
 
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textSize="24sp"
-            tools:text="USERNAME" />
-        <ImageButton
-            android:id="@+id/search_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:srcCompat ="@drawable/search_icon"
-            android:scaleType="fitCenter"
-            android:backgroundTint="@android:color/transparent"
-            app:tint="?attr/colorPrimary"
-            android:layout_alignParentEnd="true"/>
-    </RelativeLayout>
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_of_friends"
@@ -42,6 +24,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

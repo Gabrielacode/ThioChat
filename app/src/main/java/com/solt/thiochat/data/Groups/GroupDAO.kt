@@ -198,4 +198,29 @@ class GroupDAO @Inject constructor() {
         }
         return flowOfGroups
     }
+
+    suspend fun leaveGroup(user: UserModel, groupModel: GroupDisplayModel):OperationResult{
+        //To leave the user must be removed from the members collection of the group
+        //And the group be removed from the user's group collection
+       return withContext(Dispatchers.IO){
+           try {
+               val userGroupCollection =
+                   firestore.collection(USERS_COLLECTION).document(user.userId).collection(
+                       USER_GROUP_COLLECTION
+                   )
+               val groupMemberCollection =
+                   firestore.collection(GROUP_COLLECTION).document(groupModel.documentId).collection(
+                       GROUP_MEMBERS_COLLECTION
+                   )
+               firestore.runBatch {
+                   it.delete(groupMemberCollection.document(user.userId))
+                   it.delete(userGroupCollection.document(groupModel.documentId))
+               }
+               OperationResult.Success("Successfully Left Group")
+           }catch (e:Exception){
+               if (e is CancellationException) throw  e
+               else OperationResult.Failure(e)
+           }
+       }
+    }
 }

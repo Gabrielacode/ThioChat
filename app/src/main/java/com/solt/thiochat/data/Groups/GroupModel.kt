@@ -40,11 +40,20 @@ open class GroupDisplayModel(
     //We are going to overide the equals funtion
     //Lets see
     override fun equals(other: Any?): Boolean {
-        //We will return
+        //We will return true if the groupName, groupColour , modeOfAcceptance and documentId are the same
+        //Always generate a hashcode that obeys the equals function
         return  if(other is GroupDisplayModel){
-            this.documentId == other.documentId && this.groupName == other.groupName && this.groupColour == other.groupColour && this.modeOfAcceptance == other.modeOfAcceptance
+            this.documentId == other.documentId && this.groupName == other.groupName && this.groupColour == other.groupColour && this.modeOfAcceptance == other.modeOfAcceptance && this.hashCode() == other.hashCode()
         }
         else super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = documentId.hashCode()
+        result = 31 * result + groupName.hashCode()
+        result = 31 * result + groupColour.hashCode()
+        result = 31 * result + modeOfAcceptance.hashCode()
+        return result
     }
 }
 //It will have subclasses

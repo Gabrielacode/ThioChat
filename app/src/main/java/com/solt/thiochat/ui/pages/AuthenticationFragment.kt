@@ -30,9 +30,10 @@ class AuthenticationFragment: Fragment(){
  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
   super.onViewCreated(view, savedInstanceState)
   //First check if the user is authenticated
-//  authViewModel.checkIfUserIsAuthenticated{
-//   findNavController().navigate(R.id.action_authenticationFragment_to_friendsPage)
-//  }
+  authViewModel.checkIfUserIsAuthenticated{
+   findNavController().navigate(R.id.action_authenticationFragment_to_friendsPage)
+  }
+
   //Make sure at least one option is selected
   binding.materialButtonToggleGroup.apply {
    if (checkedButtonIds.isEmpty()){

@@ -131,5 +131,21 @@ class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentic
             }
         }
     }
+   fun leaveCurrentGroup(onFailure: (String) -> Unit, onSuccess: (String) -> Unit){
+     viewModelScope.launch {
+         val userModel = authentication.getCurrentUserAsModel()
+         if(userModel == null||selectedGroup == null){
+             onFailure("Error")
+         }
+         val result = groupsDAO.leaveGroup(userModel!!,selectedGroup!!)
+         when(result ){
+             is OperationResult.Failure -> onFailure(result.e.message?:"Error")
+             is OperationResult.Loading -> {}
+             is OperationResult.Success<*> -> onSuccess(result.data.toString())
+         }
 
+     }
+
+   }
+    //We will also implement leave group for any group
 }

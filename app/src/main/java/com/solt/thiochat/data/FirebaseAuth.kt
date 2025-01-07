@@ -2,6 +2,7 @@ package com.solt.thiochat.data
 
 import android.content.Context
 import android.util.Log
+
 import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -9,6 +10,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.BuildConfig
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthEmailException
@@ -54,6 +56,7 @@ class Authentication  @Inject constructor( ) {
         Log.i("Error","Current User ${currentUser.toString()}")
      return currentUser != null
     }
+    fun getGoogleServerClientId () = com.solt.thiochat.BuildConfig.serverClientId
     fun getCurrentUserDetails():FirebaseUser?{
         return currentUser
     }
@@ -145,7 +148,7 @@ class Authentication  @Inject constructor( ) {
                 val googleIdOptionRequest = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setAutoSelectEnabled(false)
-                    .setServerClientId("873174742298-n7r5ca7maqk7mrlf6dkfvvtu649ufrap.apps.googleusercontent.com")
+                    .setServerClientId(getGoogleServerClientId())
                     .build()
                 val request =
                     GetCredentialRequest.Builder().addCredentialOption(googleIdOptionRequest)
@@ -169,6 +172,8 @@ class Authentication  @Inject constructor( ) {
 
         }
     }
-
+    fun signOut(){
+     auth.signOut()
+  }
 
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +16,7 @@ import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.databinding.FriendsPageBinding
 import com.solt.thiochat.ui.adapters.FriendsAdapter
+import com.solt.thiochat.ui.viewmodel.AuthenticationViewModel
 import com.solt.thiochat.ui.viewmodel.FriendsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class FriendsPage: Fragment() {
     val friendsViewModel:FriendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
+    val authViewModel :AuthenticationViewModel by hiltNavGraphViewModels<AuthenticationViewModel>(R.id.app_nav_graph)
 
     lateinit var binding: FriendsPageBinding
 
@@ -42,21 +45,37 @@ class FriendsPage: Fragment() {
             friendsViewModel.selectedFriend = it
             findNavController().navigate(R.id.action_friendsPage_to_friendMessagePage)
         }
+        //If the user is signed in the back button should send you out of the app
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
+            OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+              authViewModel.checkIfUserIsAuthenticated {
+                  requireActivity().finish()
+              }
+            }})
 
         //Should we check whether the user is signed in again
     binding.listOfFriends.apply {
         layoutManager = LinearLayoutManager(requireActivity())
         adapter = friendAdapter
     }
-        binding.searchButton.setOnClickListener {
+        //Get the menu and set the items
+        val menu = binding.toolbar.menu
+        val searchMenuItem = menu.findItem(R.id.search_item)
+       searchMenuItem.setOnMenuItemClickListener {
             findNavController().navigate(R.id.action_friendsPage_to_friendSearchPage)
+           true
+        }
+       val leaveMenuItem = menu.findItem(R.id.sign_out)
+        leaveMenuItem.setOnMenuItemClickListener {
+            authViewModel.signOut()
+            findNavController().popBackStack()
+            true
         }
         //Get user details
         friendsViewModel.getUserDetails({
-
-            binding.userName.text = it.userName
+            binding.toolbar.title = it.userName
         }){
-
             activity.showMessageFailure(it)
         }
         //Get list of friends
@@ -68,7 +87,7 @@ class FriendsPage: Fragment() {
                 friendAdapter.submitList(it)
             }
         }
-        binding.userName.setOnClickListener {
+        binding.toolbar.setOnClickListener {
             findNavController().navigate(R.id.action_friendsPage_to_friendRequestPage)
         }
 

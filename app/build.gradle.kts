@@ -1,3 +1,9 @@
+import java.util.Properties
+
+//We will read from local.properties
+val propertiesFile = rootProject.file("local.properties")
+val properties = Properties()
+properties.load(propertiesFile.inputStream())
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -18,9 +24,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
+        debug{
+
+            buildConfigField("String","serverClientId",
+            properties["firebase_server_client_id"].toString())
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -38,6 +50,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 }

@@ -19,10 +19,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(val authService :Authentication): ViewModel() {
 
-fun checkIfUserIsAuthenticated(action:()->Unit){
+fun checkIfUserIsAuthenticated(action:()->Unit):Boolean{
     if(authService.isUserSigned()){
        action()
     }
+    return authService.isUserSigned()
 }
 
 
@@ -66,5 +67,5 @@ fun checkIfUserIsAuthenticated(action:()->Unit){
             }
         }
     }
-
+    fun signOut() = authService.signOut()
 }
