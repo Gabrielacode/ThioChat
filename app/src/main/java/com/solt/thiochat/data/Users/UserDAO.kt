@@ -55,6 +55,24 @@ class UserDAO @Inject constructor(){
         }
 
     }
+    suspend fun updateUserNameAndDescription( userId:String,name:String,description:String):OperationResult{
+        return withContext(Dispatchers.IO){
+            try {
+                val userCollection = fireStore.collection(USERS_COLLECTION)
+                val userDoc = userCollection.document(userId)
+                fireStore.runBatch {
+                    it.update(userDoc, "userName", name)
+                    it.update(userDoc, "description", description)
+                }.await()
+                OperationResult.Success("Successfully updated details")
+            }catch (e : Exception){
+                if (e is CancellationException) throw e
+                else OperationResult.Failure(e)
+            }
+        }
+
+
+    }
      fun searchUserByName(name:String): Flow<List<UserModel>>{
          val userCollection = fireStore.collection(USERS_COLLECTION)
          val query = userCollection.whereEqualTo("userName",name)
@@ -63,4 +81,5 @@ class UserDAO @Inject constructor(){
          }
     return flowOfUser
      }
+
 }

@@ -18,6 +18,7 @@ import com.solt.thiochat.databinding.FriendsPageBinding
 import com.solt.thiochat.ui.adapters.FriendsAdapter
 import com.solt.thiochat.ui.viewmodel.AuthenticationViewModel
 import com.solt.thiochat.ui.viewmodel.FriendsViewModel
+import com.solt.thiochat.ui.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 class FriendsPage: Fragment() {
     val friendsViewModel:FriendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
     val authViewModel :AuthenticationViewModel by hiltNavGraphViewModels<AuthenticationViewModel>(R.id.app_nav_graph)
-
+    val userViewModel :UserViewModel by hiltNavGraphViewModels<UserViewModel>(R.id.app_nav_graph)
     lateinit var binding: FriendsPageBinding
 
 
@@ -73,7 +74,7 @@ class FriendsPage: Fragment() {
             true
         }
         //Get user details
-        friendsViewModel.getUserDetails({
+        userViewModel.getUserDetails({
             binding.toolbar.title = it.userName
         }){
             activity.showMessageFailure(it)
@@ -88,7 +89,7 @@ class FriendsPage: Fragment() {
             }
         }
         binding.toolbar.setOnClickListener {
-            findNavController().navigate(R.id.action_friendsPage_to_friendRequestPage)
+            findNavController().navigate(R.id.action_friendsPage_to_userProfileDialog)
         }
 
     }

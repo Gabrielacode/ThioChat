@@ -16,15 +16,16 @@
         android:id="@+id/friendsPage"
         android:name="com.solt.thiochat.ui.pages.FriendsPage"
         android:label="FriendsPage" >
-        <action
-            android:id="@+id/action_friendsPage_to_friendRequestPage"
-            app:destination="@id/friendRequestPage" />
+
         <action
             android:id="@+id/action_friendsPage_to_friendMessagePage"
             app:destination="@id/friendMessagePage" />
         <action
             android:id="@+id/action_friendsPage_to_friendSearchPage"
             app:destination="@id/friendSearchPage" />
+        <action
+            android:id="@+id/action_friendsPage_to_userProfileDialog"
+            app:destination="@id/userProfileDialog" />
     </fragment>
     <fragment
         android:id="@+id/groupsPage"
@@ -95,5 +96,13 @@
         <action
             android:id="@+id/action_exploreSearchPage_to_groupMessagesPage"
             app:destination="@id/groupMessagesPage" />
+    </dialog>
+    <dialog
+        android:id="@+id/userProfileDialog"
+        android:name="com.solt.thiochat.ui.pages.UserProfileDialog"
+        android:label="UserProfileDialog" >
+        <action
+            android:id="@+id/action_userProfileDialog_to_friendRequestPage"
+            app:destination="@id/friendRequestPage" />
     </dialog>
 </navigation>

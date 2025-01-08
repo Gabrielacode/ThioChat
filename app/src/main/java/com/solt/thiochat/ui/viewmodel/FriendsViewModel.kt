@@ -25,28 +25,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FriendsViewModel @Inject constructor(val userDao:UserDAO, val authentication: Authentication,val friendsDao: FriendsDao,val friendRequestDAO: FriendRequestDAO, val friendMessages:FriendMessagesDAO):ViewModel() {
+class FriendsViewModel @Inject constructor( val authentication: Authentication,val friendsDao: FriendsDao,val friendRequestDAO: FriendRequestDAO, val friendMessages:FriendMessagesDAO):ViewModel() {
    var selectedFriend :FriendModel? = null
 
 
-    fun getUserDetails(onSuccess :(UserModel)->Unit,onFailure:(String)->Unit){
-        viewModelScope.launch {
-            val userId = authentication.getCurrentUserDetails()?.uid
-            if (userId == null){
-                onFailure("No Id for User , Is User Logged In ?")
-                return@launch
-            }
-            when(val userDetail = userDao.getCurrentSignedInUserDetails(userId)){
-                is OperationResult.Failure -> onFailure(userDetail.e.message?:"Error")
-                is OperationResult.Loading -> {}
-                is OperationResult.Success<*> -> {
-                    if (userDetail.data is UserModel){
-                        onSuccess(userDetail.data)
-                    }
-                }
-            }
-        }
-    }
+
     suspend fun getFriends(onFailure: (String) -> Unit): Flow<List<FriendModel>>? {
         val userId = authentication.getCurrentUserDetails()?.uid
         return if (userId == null){
