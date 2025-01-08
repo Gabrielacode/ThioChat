@@ -8,6 +8,7 @@ import com.solt.thiochat.data.Groups.GroupDAO
 import com.solt.thiochat.data.Groups.GroupDisplayModel
 import com.solt.thiochat.data.Groups.GroupInfoModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageDAO
+import com.solt.thiochat.data.Groups.Messages.GroupMessageDisplayModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageModel
 import com.solt.thiochat.data.Groups.ModeOfAcceptance
 import com.solt.thiochat.data.Groups.Request.GroupRequestDisplayModel
@@ -59,7 +60,7 @@ class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentic
         return groupsDAO.searchGroupUserInByName(userModel,name)
     }
 
-    fun getGroupsMessagesOfSelectedGroup(onFailure: (String) -> Unit):Flow<List< GroupMessageModel>>?{
+    fun getGroupsMessagesOfSelectedGroup(onFailure: (String) -> Unit):Flow<List<GroupMessageDisplayModel>>?{
         val currentUserModel = authentication.getCurrentUserAsModel()
         if (currentUserModel == null || selectedGroup == null){
             onFailure("Is User Signed In?")

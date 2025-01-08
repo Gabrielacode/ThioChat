@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.solt.thiochat.data.Authentication
 import com.solt.thiochat.data.Friends.FriendModel
 import com.solt.thiochat.data.Friends.FriendsDao
+import com.solt.thiochat.data.Friends.Messages.FriendMessageDisplayModel
 import com.solt.thiochat.data.Friends.Messages.FriendMessageModel
 import com.solt.thiochat.data.Friends.Messages.FriendMessagesDAO
 import com.solt.thiochat.data.Friends.Requests.FriendRequestDAO
@@ -121,7 +122,7 @@ class FriendsViewModel @Inject constructor(val userDao:UserDAO, val authenticati
             friendRequestDAO.displayFriendRequestsForUser(userModel)
         }
     }
-    fun getMessagesWithCurrentFriend (onFailure: (String) -> Unit):Flow<List<FriendMessageModel>>?{
+    fun getMessagesWithCurrentFriend (onFailure: (String) -> Unit):Flow<List<FriendMessageDisplayModel>>?{
         val userModel = authentication.getCurrentUserAsModel()
         if (userModel == null||selectedFriend == null){
             onFailure("Couldn't get Messages")
