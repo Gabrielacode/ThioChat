@@ -3,6 +3,7 @@ package com.solt.thiochat.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.Query
 import com.solt.thiochat.data.Authentication
 import com.solt.thiochat.data.Groups.GroupDAO
 import com.solt.thiochat.data.Groups.GroupDisplayModel
@@ -20,8 +21,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,13 +33,29 @@ import javax.inject.Inject
 class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentication: Authentication, val groupMessageDAO: GroupMessageDAO, val groupRequestsDAO: GroupRequestsDAO):ViewModel() {
     var selectedGroup :GroupDisplayModel? = null
 
-    fun getGroupsUserIsIn(onFailure: (String) -> Unit):Flow<List<GroupDisplayModel>>?{
+    fun getGroupsUserIsIn(onFailure: (String) -> Unit):Flow<List<GroupDisplayModel?>>?{
         val userModel = authentication.getCurrentUserAsModel()
         if(userModel == null){
             onFailure("Is User Signed In?")
             return null
         }
-        return groupsDAO.getGroupsUserIsAMember(userModel).catch { onFailure(it.message?:"Error") }.buffer()
+        //There is an update
+        //Now the group will contain the latest message
+       val flowOfGroups =  groupsDAO.getGroupsUserIsAMember(userModel).catch { onFailure(it.message?:"Error") }
+        //Now for each group there willbe a flow updateing the message
+       val flowsOfGroupMessages =   flowOfGroups.map { displayModels ->
+            //Get the latest message
+            displayModels.map { model ->
+               val flowOfMessages =  groupMessageDAO.getLatestMessageOfGroup(model)
+              //Then assign it to the
+                model.apply {
+                    latestMessages = flowOfMessages
+                }
+
+               }
+            }
+        return  flowsOfGroupMessages
+
     }
     fun addGroup(groupInfo : GroupInfoModel, onSuccess:(String)->Unit, onFailure: (String) -> Unit){
         viewModelScope.launch {
@@ -67,7 +87,7 @@ class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentic
             return null
         }
 
-        val flowOfMessagesSorted = groupMessageDAO.getGroupMessagesOfGroup(selectedGroup!!)
+        val flowOfMessagesSorted = groupMessageDAO.getGroupMessagesOfGroup(selectedGroup!!,Query.Direction.ASCENDING)
             .map{ it.map { message->
                 if(message.userId == currentUserModel.userId)  message.toUserMessage()
                 else message.toNonUserMessage()

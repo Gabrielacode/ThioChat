@@ -40,7 +40,7 @@ class GroupsPage:Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val activity = requireActivity() as MainActivity
-        val groupAdapter = GroupAdapter{
+        val groupAdapter = GroupAdapter(this){
             groupViewModel.selectedGroup = it
           findNavController().navigate(R.id.action_groupsPage_to_groupMessagesPage)
         }

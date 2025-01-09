@@ -2,9 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="200dp"
+    android:layout_width="180dp"
     android:layout_height="wrap_content"
-    android:padding="4dp"
+    android:paddingHorizontal="8dp"
+    android:paddingBottom="12dp"
+    android:background="@drawable/group_item_background"
 
  >
 
@@ -12,14 +14,37 @@
         android:id="@+id/group_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="150dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif"
         android:gravity="bottom"
         android:textSize="20sp"
-        android:background="@drawable/group_item_background"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="TextView" />
+
+    <RelativeLayout
+        android:id="@+id/latest_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/round_corner_transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="TextView"
-        android:layout_margin="8dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/group_name"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/latest_messsage_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="He was poopdksdjd in the toilert "/>
+        <TextView
+            android:id="@+id/latest_messsage_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="22:34"
+            android:textStyle="bold"
+            android:layout_below="@+id/latest_messsage_content"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

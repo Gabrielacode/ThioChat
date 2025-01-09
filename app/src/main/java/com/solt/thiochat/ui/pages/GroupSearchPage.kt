@@ -54,7 +54,7 @@ class GroupSearchPage:BottomSheetDialogFragment() {
 
         }
         val activity = requireActivity() as MainActivity
-        val groupAdapter = GroupAdapter{
+        val groupAdapter = GroupAdapter(this){
             groupViewModel.selectedGroup = it
             findNavController().navigate(R.id.action_groupSearchPage_to_groupMessagesPage)
         }

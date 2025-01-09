@@ -57,7 +57,7 @@ class ExploreSearchPage: BottomSheetDialogFragment() {
 
         }
         val activity = requireActivity() as MainActivity
-        val searchAdapter = ExploreSearchAdapter(  {group-> exploreViewModel.joinGroup(group,{activity.showMessageSuccess(it)},{activity.showMessageFailure(it)}) })
+        val searchAdapter = ExploreSearchAdapter( this, {group-> exploreViewModel.joinGroup(group,{activity.showMessageSuccess(it)},{activity.showMessageFailure(it)}) })
         {  groupViewModel.selectedGroup = it
             findNavController().navigate(R.id.action_exploreSearchPage_to_groupMessagesPage)}
         binding.searchBar.addTextChangedListener(textWatcher)

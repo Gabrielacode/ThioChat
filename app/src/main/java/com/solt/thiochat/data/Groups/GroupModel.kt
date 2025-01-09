@@ -5,7 +5,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.ServerTimestamp
 import com.google.firebase.firestore.util.CustomClassMapper
+import com.solt.thiochat.data.Groups.Messages.GroupMessageDisplayModel
+import com.solt.thiochat.data.Groups.Messages.GroupMessageModel
 import com.solt.thiochat.data.Users.UserModel
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 data class GroupInfoModel(
@@ -23,8 +26,15 @@ open class GroupDisplayModel(
     val documentId:String,
     val groupName:String,
     val groupColour: String,
-    val modeOfAcceptance: String
+    val modeOfAcceptance: String,
+
 ){
+    //This will be used to set the latest message of the group which will be a flow
+
+    var latestMessages : Flow<GroupMessageModel?>? = null
+
+
+
     class UserInGroup(
         id:String,
         name:String,

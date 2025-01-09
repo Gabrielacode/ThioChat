@@ -53,6 +53,7 @@ class FriendsDao @Inject constructor() {
         /* First it will check the users collection if there is a document under the friends collection with the id as the user id of the friend
         Then it will do the same for the friend
         //If both options are true then it will return true
+
         * */
         return withContext(Dispatchers.IO){
             try {
