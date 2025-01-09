@@ -46,8 +46,11 @@
         android:name="com.solt.thiochat.ui.pages.GroupMessagesPage"
         android:label="GroupMessagesPage" >
         <action
-            android:id="@+id/action_groupMessagesPage_to_groupRequestsPage"
-            app:destination="@id/groupRequestsPage" />
+            android:id="@+id/action_groupMessagesPage_to_friendMessagePage"
+            app:destination="@id/friendMessagePage" />
+        <action
+            android:id="@+id/action_groupMessagesPage_to_groupInfoDialog"
+            app:destination="@id/groupInfoDialog" />
     </fragment>
     <fragment
         android:id="@+id/explorePage"
@@ -104,5 +107,16 @@
         <action
             android:id="@+id/action_userProfileDialog_to_friendRequestPage"
             app:destination="@id/friendRequestPage" />
+    </dialog>
+    <dialog
+        android:id="@+id/groupInfoDialog"
+        android:name="com.solt.thiochat.ui.pages.GroupInfoDialog"
+        android:label="GroupInfoDialog" >
+        <action
+            android:id="@+id/action_groupInfoDialog_to_friendMessagePage"
+            app:destination="@id/friendMessagePage" />
+        <action
+            android:id="@+id/action_groupInfoDialog_to_groupRequestsPage"
+            app:destination="@id/groupRequestsPage" />
     </dialog>
 </navigation>

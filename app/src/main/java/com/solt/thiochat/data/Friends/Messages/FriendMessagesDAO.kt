@@ -1,10 +1,12 @@
 package com.solt.thiochat.data.Friends.Messages
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObjects
 import com.solt.thiochat.data.Friends.FRIENDS_COLLECTION
 import com.solt.thiochat.data.Friends.FriendModel
+import com.solt.thiochat.data.Groups.Messages.GroupMessageModel
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.data.Users.USERS_COLLECTION
 import com.solt.thiochat.data.Users.UserModel
@@ -58,5 +60,17 @@ class FriendMessagesDAO @Inject constructor() {
             else OperationResult.Failure(e)
         }
     }
+  }
+  fun getLatestMessageWithFriend(user: UserModel,friendModel: FriendModel):Flow<FriendMessageModel?>{
+      val friendMessagesSubcollection = firestore.collection(USERS_COLLECTION).document(user.userId)
+          .collection(FRIENDS_COLLECTION).document(friendModel.userId).collection(
+              FRIEND_MESSAGES_SUBCOLLECTION)
+      val query = friendMessagesSubcollection.orderBy("timeStamp", Query.Direction.DESCENDING).limit(1)
+      val flowOfLatestMessages = query.snapshots().map {
+          val list =   it.toObjects<FriendMessageModel>()
+          if (list.isEmpty()) null
+          else list.first()
+      }
+      return flowOfLatestMessages
   }
 }

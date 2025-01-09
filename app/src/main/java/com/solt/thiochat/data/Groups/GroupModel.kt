@@ -19,6 +19,7 @@ data class GroupInfoModel(
 data class GroupMemberModel(
     val userId:String="",
     val userName:String="",
+    val description:String= "",
     val role:String =""
 )
 

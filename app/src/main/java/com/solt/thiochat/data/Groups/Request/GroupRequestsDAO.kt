@@ -61,7 +61,7 @@ class GroupRequestsDAO @Inject constructor() {
                    .collection(USER_GROUP_COLLECTION)
 
                firestore.runBatch {
-                   val memberModel = GroupMemberModel(groupRequest.userModel.userId,groupRequest.userModel.userName,Role.MEMBER.toString())
+                   val memberModel = GroupMemberModel(groupRequest.userModel.userId,groupRequest.userModel.userName,groupRequest.userModel.description,Role.MEMBER.toString())
                    it.set(groupMembersRef.document(memberModel.userId),memberModel)
                    it.set(userGroupsCollection.document(group.documentId),
                        GroupInfoModel(group.groupName,group.groupColour,group.modeOfAcceptance)

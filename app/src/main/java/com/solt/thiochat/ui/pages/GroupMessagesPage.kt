@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -20,22 +19,23 @@ import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.data.Friends.FriendModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageDisplayModel
-import com.solt.thiochat.data.Groups.Messages.GroupMessageModel
+import com.solt.thiochat.data.OperationResult
+import com.solt.thiochat.data.Users.UserModel
 import com.solt.thiochat.databinding.GroupMessageLayoutBinding
 import com.solt.thiochat.ui.adapters.GroupMessagesAdapter
 import com.solt.thiochat.ui.viewmodel.FriendsViewModel
 import com.solt.thiochat.ui.viewmodel.GroupsViewModel
-import kotlinx.coroutines.async
+import com.solt.thiochat.ui.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
 class GroupMessagesPage: Fragment() {
 lateinit var binding: GroupMessageLayoutBinding
 val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(R.id.app_nav_graph)
     val friendViewModel:FriendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
+    val userViewModel:UserViewModel by hiltNavGraphViewModels<UserViewModel>(R.id.app_nav_graph)
     val flowOfQueries = MutableStateFlow("")
 
     override fun onCreateView(
@@ -50,7 +50,20 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val activity = requireActivity() as MainActivity
-        val messageAdapter = GroupMessagesAdapter( this,::checkIfUsersFriends,::sendRequest){}
+        val messageAdapter = GroupMessagesAdapter( this,::checkIfUsersFriends,{ message->
+            val messageAsFriend = FriendModel(message.userId,message.userName)
+            friendViewModel.sendFriendRequest(messageAsFriend,{activity.showMessageSuccess(it)}){activity.showMessageSuccess(it)}
+        },::userAreFriends){
+           val result =  userViewModel.userDAO.getUserDetailsById(it)
+            when(result){
+                is OperationResult.Failure -> null
+                is OperationResult.Loading -> null
+                is OperationResult.Success<*> -> {
+                    val userModel = result.data as?UserModel
+                    userModel
+                }
+            }
+        }
 
         binding.messageList.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -81,11 +94,7 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
             groupViewModel.sendMessageToGroup(text)
         }
         binding.toolbar.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                if(groupViewModel.checkIfRequestAreAccessible { activity.showMessageFailure(it) }){
-                    findNavController().navigate(R.id.action_groupMessagesPage_to_groupRequestsPage)
-            }
-            }
+          findNavController().navigate(R.id.action_groupMessagesPage_to_groupInfoDialog)
 
         }
         //Now we want that when the user clicks the search
@@ -148,10 +157,13 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
         return friendViewModel.checkIfTwoUsersAreFriends(messageAsFriend){activity.showMessageFailure(it)}
     }
 
-    fun sendRequest(message: GroupMessageDisplayModel){
+    fun sendRequest(message: GroupMessageDisplayModel,onSuccess:(String)->Unit,onFailure:(String)->Unit){
         val activity  = requireActivity() as MainActivity
-        val messageAsFriend = FriendModel(message.userId,message.userName)
-        friendViewModel.sendFriendRequest(messageAsFriend,{activity.showMessageSuccess(it)}){activity.showMessageFailure(it)}
+
+    }
+    fun userAreFriends(friend:FriendModel){
+        friendViewModel.selectedFriend = friend
+        findNavController().navigate(R.id.action_groupMessagesPage_to_friendMessagePage)
     }
 
 

@@ -1,11 +1,9 @@
 package com.solt.thiochat.data.Users
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
-import com.solt.thiochat.data.Authentication
 import com.solt.thiochat.data.OperationResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +33,7 @@ class UserDAO @Inject constructor(){
         }
     }
 
-    suspend fun getCurrentSignedInUserDetails(userId:String):OperationResult{
+    suspend fun getUserDetailsById(userId:String):OperationResult{
         return withContext(Dispatchers.IO){
             try {
 

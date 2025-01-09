@@ -1,6 +1,8 @@
 package com.solt.thiochat.data.Groups
 
 import android.util.Log
+import com.google.firebase.firestore.AggregateField
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
@@ -83,7 +85,7 @@ class GroupDAO @Inject constructor() {
                val groupDocRef = groupCollection.document()
                 it.set(groupDocRef,groupInfoModel)
                 //Add the user as the admin
-                val member = GroupMemberModel(creator.userId,creator.userName, Role.ADMIN.toString())
+                val member = GroupMemberModel(creator.userId,creator.userName,creator.description, Role.ADMIN.toString())
                 val creatorDocRef = groupDocRef.collection(GROUP_MEMBERS_COLLECTION).document(creator.userId)
                 it.set(creatorDocRef,member)
                 //We also need to add the group to the users list of groups
@@ -135,7 +137,32 @@ class GroupDAO @Inject constructor() {
         }
         return flowOfGroups
            }
-
+   fun getMembersOfAGroup(groupDisplayModel: GroupDisplayModel):Flow<List<GroupMemberModel>>{
+       val groupMembersCollection = firestore.collection(GROUP_COLLECTION).document(groupDisplayModel.documentId).collection(
+           GROUP_MEMBERS_COLLECTION)
+       val flowOfMembers = groupMembersCollection.snapshots().map {
+           it.toObjects<GroupMemberModel>()
+       }
+       return flowOfMembers
+    }
+   suspend fun getCountOfMembers(groupModel: GroupDisplayModel):OperationResult{
+       return withContext(Dispatchers.IO) {
+           try {
+               val groupMembersCollection =
+                   firestore.collection(GROUP_COLLECTION).document(groupModel.documentId)
+                       .collection(
+                           GROUP_MEMBERS_COLLECTION
+                       )
+               val countQuery = groupMembersCollection.count()
+               val result = countQuery.get(AggregateSource.SERVER).await()
+               OperationResult.Success(result.get(AggregateField.count()))
+           }catch (e:Exception){
+               Log.i("Count",e.message?:"Error")
+               if (e is CancellationException) throw e
+               else OperationResult.Failure(e)
+           }
+       }
+    }
 
    suspend fun addUserToGroup(user :UserModel, groupModel: GroupDisplayModel):OperationResult {
        //Do we need to update it to contain the invitations or make a separate method
@@ -153,7 +180,7 @@ class GroupDAO @Inject constructor() {
                when(mode){
                    ModeOfAcceptance.NONE ->{
                        //Just add the user directly
-                       val member = GroupMemberModel(user.userId,user.userName,Role.MEMBER.toString())
+                       val member = GroupMemberModel(user.userId,user.userName,user.description,Role.MEMBER.toString())
                        val memberDocRef  = groupMemberCollection.document(member.userId)
                        val userGroupRef = userGroupsCollection.document(groupModel.documentId)
                        val group = GroupInfoModel(groupModel.groupName,groupModel.groupColour,groupModel.modeOfAcceptance)

@@ -8,6 +8,7 @@ import com.solt.thiochat.data.Authentication
 import com.solt.thiochat.data.Groups.GroupDAO
 import com.solt.thiochat.data.Groups.GroupDisplayModel
 import com.solt.thiochat.data.Groups.GroupInfoModel
+import com.solt.thiochat.data.Groups.GroupMemberModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageDAO
 import com.solt.thiochat.data.Groups.Messages.GroupMessageDisplayModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageModel
@@ -169,4 +170,27 @@ class GroupsViewModel @Inject constructor(val groupsDAO: GroupDAO, val authentic
 
    }
     //We will also implement leave group for any group
+
+    fun getMembersOfCurrentGroup():Flow<List<GroupMemberModel>>?{
+        if(selectedGroup == null){
+            return null
+        }
+        return groupsDAO.getMembersOfAGroup(selectedGroup!!)
+    }
+    fun getNoOfMembersInCurrentGroup(onFailure: (String) -> Unit, onSuccess: (Long) -> Unit){
+        viewModelScope.launch {
+      if(selectedGroup == null){
+           onFailure("Error")
+            return@launch
+        }
+        val result = groupsDAO.getCountOfMembers(selectedGroup!!)
+      when(result){
+          is OperationResult.Failure -> onFailure("Error getting Count")
+          is OperationResult.Loading -> onFailure("Error getting Count")
+          is OperationResult.Success<*> -> {
+              val count = result.data as Long
+              onSuccess(count)
+          }
+      }}
+    }
 }

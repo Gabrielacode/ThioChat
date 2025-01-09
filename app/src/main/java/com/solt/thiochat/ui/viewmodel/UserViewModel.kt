@@ -19,7 +19,7 @@ class UserViewModel @Inject constructor( val authentication: Authentication,val 
                 onFailure("No Id for User , Is User Logged In ?")
                 return@launch
             }
-            when(val userDetail = userDAO.getCurrentSignedInUserDetails(userId)){
+            when(val userDetail = userDAO.getUserDetailsById(userId)){
                 is OperationResult.Failure -> onFailure(userDetail.e.message?:"Error")
                 is OperationResult.Loading -> {}
                 is OperationResult.Success<*> -> {

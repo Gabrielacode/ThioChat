@@ -35,11 +35,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.solt.thiochat.R
+import com.solt.thiochat.data.Friends.FriendModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageDisplayModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageModel
+import com.solt.thiochat.data.Users.UserModel
+import com.solt.thiochat.databinding.GroupProfileDialogBinding
 import com.solt.thiochat.databinding.NonUserMessageLayoutBinding
 import com.solt.thiochat.databinding.SendFriendRequestLayoutBinding
 import com.solt.thiochat.databinding.UserMessageLayoutBinding
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 const val USER = 1
@@ -63,7 +67,7 @@ val groupMessageDiffUtil = object : DiffUtil.ItemCallback<GroupMessageDisplayMod
     }
 
 }
-class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: suspend (GroupMessageDisplayModel)->Boolean , val onSendRequest:  (GroupMessageDisplayModel)->Unit,val usersAreFriends:()->Unit):ListAdapter<GroupMessageDisplayModel,MessageViewHolder>(groupMessageDiffUtil),Filterable {
+class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: suspend (GroupMessageDisplayModel)->Boolean , val onSendRequest:  (GroupMessageDisplayModel)->Unit,val usersAreFriends:(FriendModel)->Unit,val getUserInfo: suspend (String)-> UserModel?):ListAdapter<GroupMessageDisplayModel,MessageViewHolder>(groupMessageDiffUtil),Filterable {
     var standardCurrentList = emptyList<GroupMessageDisplayModel>()
 
     override fun getItemViewType(position: Int): Int {
@@ -74,10 +78,10 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
       return if(viewType == USER){
           val binding = UserMessageLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-           UserMessageViewHolder(fragment,binding,checkIfUsersAreFriends,onSendRequest,usersAreFriends)
+           UserMessageViewHolder(fragment,binding,checkIfUsersAreFriends,onSendRequest,usersAreFriends,getUserInfo)
       }else {
           val binding = NonUserMessageLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-          NonUserMessageViewHolder( fragment, binding,checkIfUsersAreFriends,onSendRequest,usersAreFriends)
+          NonUserMessageViewHolder( fragment, binding,checkIfUsersAreFriends,onSendRequest,usersAreFriends,getUserInfo)
       }
     }
 
@@ -133,7 +137,7 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
      open fun highlightSearchedText(searchQuery:String){}
 
 }
- class UserMessageViewHolder(val fragment :Fragment,val binding: UserMessageLayoutBinding,val checkIfUsersAreFriends: suspend (GroupMessageDisplayModel)->Boolean , val onSendRequest:  (GroupMessageDisplayModel)->Unit,val usersAreFriends:()->Unit):MessageViewHolder(binding.root){
+ class UserMessageViewHolder(val fragment :Fragment,val binding: UserMessageLayoutBinding,val checkIfUsersAreFriends: suspend (GroupMessageDisplayModel)->Boolean , val onSendRequest:  (GroupMessageDisplayModel)->Unit,val usersAreFriends:(FriendModel)->Unit, val getUserInfo: suspend (String)-> UserModel?):MessageViewHolder(binding.root){
     override fun bind(message: GroupMessageDisplayModel) {
         binding.apply {
             userName.text = message.userName
@@ -149,22 +153,38 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
             //By setting the buffer type we can edit the span without editing and redrawing the text
 
             //We will be using bottom dialog sheet
-            val requestBinding = SendFriendRequestLayoutBinding.inflate(LayoutInflater.from(root.context))
+            val requestBinding = GroupProfileDialogBinding.inflate(LayoutInflater.from(root.context))
             val bottomModalDialog = BottomSheetDialog(root.context).apply {
                 setContentView(requestBinding.root)
             }
-            requestBinding.root.setOnClickListener {
-                onSendRequest(message)
-                bottomModalDialog.dismiss()
-            }
+//
             userName.setOnClickListener {
+                //Show the dialog
+                bottomModalDialog.show()
                 fragment.viewLifecycleOwner.lifecycleScope.launch {
+                    //Get the user details of the user who sent the message
+                    val userDetails = async {getUserInfo(message.userId)}.await()
+                    requestBinding.userName.setText( userDetails?.userName?:"User Cannot be identified")
+                    requestBinding.description.setText(userDetails?.description?:"")
+
                 //Check if the users are friends
                 if (checkIfUsersAreFriends(message)){
-                    usersAreFriends
+                    //If the users are friends
+                    //Show the Go to Message
+                    requestBinding.messageOrRequestBtn.text = "Message Me"
+                    requestBinding.messageOrRequestBtn.setOnClickListener {
+                        usersAreFriends(FriendModel(message.userId,message.userName))
+                        bottomModalDialog.dismiss()
+                    }
                 }else{
-                    //If not show a send request dialog
-                bottomModalDialog.show()
+                    //If the users are not friends
+                    //Then set button to sent request
+                    requestBinding.messageOrRequestBtn.text = "Send Request"
+                    requestBinding.messageOrRequestBtn.setOnClickListener {
+                        onSendRequest(message)
+                        bottomModalDialog.dismiss()
+                    }
+
                 }
             }}
             if (!message.searchQuery.isNullOrBlank()){
@@ -202,7 +222,7 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
 
 
 }
-class NonUserMessageViewHolder( val fragment: Fragment,val binding: NonUserMessageLayoutBinding,val checkIfUsersAreFriends: suspend (GroupMessageDisplayModel)->Boolean , val onSendRequest:  (GroupMessageDisplayModel)->Unit,val usersAreFriends:()->Unit):MessageViewHolder(binding.root){
+class NonUserMessageViewHolder( val fragment: Fragment,val binding: NonUserMessageLayoutBinding,val checkIfUsersAreFriends: suspend (GroupMessageDisplayModel)->Boolean , val onSendRequest:  (GroupMessageDisplayModel)->Unit,val usersAreFriends:(FriendModel)->Unit,val getUserInfo: suspend (String)-> UserModel?):MessageViewHolder(binding.root){
     override fun bind(message: GroupMessageDisplayModel) {
         binding.apply {
             userName.text = message.userName
@@ -212,23 +232,39 @@ class NonUserMessageViewHolder( val fragment: Fragment,val binding: NonUserMessa
             val dateString =  if (time != null)formatter.format(time) else "No Date"
             timeSent.text = dateString
             messageText.text = message.text
-            val requestBinding = SendFriendRequestLayoutBinding.inflate(LayoutInflater.from(root.context))
+            val requestBinding = GroupProfileDialogBinding.inflate(LayoutInflater.from(root.context))
             val bottomModalDialog = BottomSheetDialog(root.context).apply {
                 setContentView(requestBinding.root)
             }
             userName.setOnClickListener {
-                fragment.viewLifecycleOwner.lifecycleScope.launch{
-                //We will be using bottom dialog sheet
+                //Show the dialog
+                bottomModalDialog.show()
+                fragment.viewLifecycleOwner.lifecycleScope.launch {
+                    //Get the user details of the user who sent the message
+                    val userDetails = async {getUserInfo(message.userId)}.await()
+                    requestBinding.userName.setText( userDetails?.userName?:"User Cannot be identified")
+                    requestBinding.description.setText(userDetails?.description?:"")
 
-                //Check if the users are friends
-                if (checkIfUsersAreFriends(message)){
-                    usersAreFriends
-                }else{
-                    //If not show a send request dialog
-                    bottomModalDialog.show()
-                }
-            }
-            }
+                    //Check if the users are friends
+                    if (checkIfUsersAreFriends(message)){
+                        //If the users are friends
+                        //Show the Go to Message
+                        requestBinding.messageOrRequestBtn.text = "Message Me"
+                        requestBinding.messageOrRequestBtn.setOnClickListener {
+                            usersAreFriends(FriendModel(message.userId,message.userName))
+                            bottomModalDialog.dismiss()
+                        }
+                    }else{
+                        //If the users are not friends
+                        //Then set button to sent request
+                        requestBinding.messageOrRequestBtn.text = "Send Request"
+                        requestBinding.messageOrRequestBtn.setOnClickListener {
+                            onSendRequest(message)
+                            bottomModalDialog.dismiss()
+                        }
+
+                    }
+                }}
             requestBinding.root.setOnClickListener {
                     Log.i("gg","Launch is called")
                     onSendRequest(message)
