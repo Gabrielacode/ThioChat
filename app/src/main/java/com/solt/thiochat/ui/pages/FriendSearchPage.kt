@@ -16,6 +16,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.internal.TextWatcherAdapter
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
+import com.solt.thiochat.data.Friends.FriendDisplayModel
+import com.solt.thiochat.data.Friends.FriendModel
 import com.solt.thiochat.databinding.SearchBottomDialogBinding
 import com.solt.thiochat.ui.adapters.FriendsAdapter
 import com.solt.thiochat.ui.viewmodel.FriendsViewModel
@@ -59,8 +61,8 @@ class FriendSearchPage:BottomSheetDialogFragment() {
         }
         val activity = requireActivity() as MainActivity
         //We will sort based on the current friend
-        val friendsAdapter = FriendsAdapter{
-            friendsViewModel.selectedFriend = it
+        val friendsAdapter = FriendsAdapter(this){
+            friendsViewModel.selectedFriend = FriendModel(it.userId,it.userName)
             findNavController().navigate(R.id.action_friendsPage_to_friendMessagePage)
         }
           binding.searchBar.addTextChangedListener(textWatcher)
@@ -76,7 +78,7 @@ class FriendSearchPage:BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             flowOfQuery.collectLatest {
                 friendsViewModel.searchFriends(it)?.collectLatest { friends ->
-                    friendsAdapter.submitList(friends)
+                    friendsAdapter.submitList(friends.map { friend ->FriendDisplayModel(friend.userId,friend.userName,null) })
 
                 }
             }

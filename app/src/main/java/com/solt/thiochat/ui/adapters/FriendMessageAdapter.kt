@@ -10,10 +10,17 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toBitmapOrNull
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.text.toSpannable
+import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.renderscript.Toolkit
+import com.solt.thiochat.R
 import com.solt.thiochat.data.Friends.Messages.FriendMessageDisplayModel
 import com.solt.thiochat.data.Friends.Messages.FriendMessageModel
 import com.solt.thiochat.data.Groups.Messages.GroupMessageDisplayModel
@@ -159,6 +166,13 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
                 if (!message.searchQuery.isNullOrBlank()){
                     Log.i("SearchQuery","Is Search Query Null After Search ${message.searchQuery}")
                     highlightSearchedText(message.searchQuery!!)
+                }
+
+                val inputBitmap = AppCompatResources.getDrawable(root.context, R.drawable.cancel_icon)?.toBitmapOrNull()
+                if (inputBitmap != null){
+                  val bitmap =   Toolkit.blur(inputBitmap,25)
+                    chatLayout.background = bitmap.toDrawable(chatLayout.resources)
+                Log.i("Blur", bitmap.byteCount.toString())
                 }
             }
 

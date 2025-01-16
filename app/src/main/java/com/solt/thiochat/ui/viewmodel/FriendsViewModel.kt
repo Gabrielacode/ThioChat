@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.solt.thiochat.data.Authentication
+import com.solt.thiochat.data.Friends.FriendDisplayModel
 import com.solt.thiochat.data.Friends.FriendModel
 import com.solt.thiochat.data.Friends.FriendsDao
 import com.solt.thiochat.data.Friends.Messages.FriendMessageDisplayModel
@@ -30,12 +31,20 @@ class FriendsViewModel @Inject constructor( val authentication: Authentication,v
 
 
 
-    suspend fun getFriends(onFailure: (String) -> Unit): Flow<List<FriendModel>>? {
-        val userId = authentication.getCurrentUserDetails()?.uid
-        return if (userId == null){
+    suspend fun getFriends(onFailure: (String) -> Unit): Flow<List<FriendDisplayModel>>? {
+        val userModel = authentication.getCurrentUserAsModel()
+        return if (userModel== null){
+            onFailure("Error")
           null
         }else{
-           friendsDao.getFriends(userId)
+          val friendsFlow =  friendsDao.getFriends(userModel.userId)
+            val flowOfFriendsWithLatestMessage =friendsFlow.map { list ->
+                list.map {
+                    val flowOfLatestMessageWithFriend = friendMessages.getLatestMessageWithFriend(userModel,it)
+                   FriendDisplayModel(it.userId,it.userName,flowOfLatestMessageWithFriend)
+                }
+            }
+            flowOfFriendsWithLatestMessage
         }
     }
      fun searchFriends(name:String):Flow<List<FriendModel>>?{

@@ -22,7 +22,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
+        renderscriptTargetApi = 35
+        renderscriptSupportModeEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
@@ -90,6 +91,10 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     //Colour picker view
     implementation ("com.github.skydoves:colorpickerview:2.3.0")
+    //RenderScriptReplacementToolkit
+    implementation("com.github.android:renderscript-intrinsics-replacement-toolkit:b6363490c3")
+    //The Splash Screen Api
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }
 kapt {
     correctErrorTypes = true
