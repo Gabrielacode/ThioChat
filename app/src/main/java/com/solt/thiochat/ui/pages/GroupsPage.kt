@@ -1,16 +1,30 @@
 package com.solt.thiochat.ui.pages
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DrawFilter
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.BitmapCompat
+import androidx.core.graphics.drawable.toBitmapOrNull
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.transition.TransitionInflater
+import com.google.android.renderscript.Toolkit
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.data.Groups.GroupInfoModel
@@ -27,27 +41,48 @@ class GroupsPage:Fragment() {
     lateinit var binding: GroupPageBinding
 
     val groupViewModel :GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(R.id.app_nav_graph)
+    lateinit var groupAdapter:GroupAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val activity = requireActivity() as MainActivity
+         groupAdapter = GroupAdapter(this){model,layout->
+            groupViewModel.selectedGroup = model
+            val sharedElementTransition = FragmentNavigatorExtras(layout to "groupItem${model.groupName}")
+            findNavController().navigate(R.id.action_groupsPage_to_groupMessagesPage,null,null,sharedElementTransition)
+        }
+        lifecycleScope.launch {
+            groupViewModel.getGroupsUserIsIn { activity.showMessageFailure(it) }?.collectLatest {
+
+                groupAdapter.submitList(it)
+            }
+        }
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = GroupPageBinding.inflate(inflater,container,false)
+        postponeEnterTransition()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val activity = requireActivity() as MainActivity
-        val groupAdapter = GroupAdapter(this){
-            groupViewModel.selectedGroup = it
-          findNavController().navigate(R.id.action_groupsPage_to_groupMessagesPage)
-        }
+
+
+
+
+
         //The menu we will get and set the item
         //Then we will set the item to open the search click listener when expanded
         val menu = binding.toolbar.menu
         val searchItem = menu.findItem(R.id.search_item).setOnMenuItemClickListener {
+            //Animate the search drawable
+            (it.icon as? AnimatedVectorDrawable)?.start()
             findNavController().navigate(R.id.action_groupsPage_to_groupSearchPage)
             true
         }
@@ -57,18 +92,17 @@ class GroupsPage:Fragment() {
             adapter = groupAdapter
         }
         //Listen for groups
-        viewLifecycleOwner.lifecycleScope.launch {
-            groupViewModel.getGroupsUserIsIn { activity.showMessageFailure(it) }?.collectLatest {
-             Log.i("Groups",it.toString())
-                groupAdapter.submitList(it)
-            }
-        }
+
 
         binding.addGroup.setOnClickListener {
             findNavController().navigate(R.id.action_groupsPage_to_addGroupDialog)
         }
 
 
+
+
     }
+
+
 
 }

@@ -1,6 +1,8 @@
 package com.solt.thiochat.ui.pages
 
+import android.animation.TimeInterpolator
 import android.graphics.Color
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,13 +10,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Interpolator
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionInflater
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.data.Friends.FriendModel
@@ -37,18 +45,32 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
     val friendViewModel:FriendsViewModel by hiltNavGraphViewModels<FriendsViewModel>(R.id.app_nav_graph)
     val userViewModel:UserViewModel by hiltNavGraphViewModels<UserViewModel>(R.id.app_nav_graph)
     val flowOfQueries = MutableStateFlow("")
-
+    val transition = ChangeBounds().apply { duration = 150 }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = GroupMessageLayoutBinding.inflate(inflater,container,false)
+
+        sharedElementEnterTransition = transition
+        sharedElementReturnTransition = transition
+
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.  transitionName ="groupItem${groupViewModel.selectedGroup?.groupName}"
+        postponeEnterTransition()
+        //Set the shared element transition
+            binding.toolbar.apply {
+
+                doOnPreDraw {
+                    startPostponedEnterTransition()
+                }
+            }
         val activity = requireActivity() as MainActivity
         val messageAdapter = GroupMessagesAdapter( this,::checkIfUsersFriends,{ message->
             val messageAsFriend = FriendModel(message.userId,message.userName)
@@ -70,7 +92,18 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
             adapter = messageAdapter
         }
         binding.toolbar.title= groupViewModel.selectedGroup?.groupName?:"No Group"
-        binding.toolbar.setBackgroundColor(try{groupViewModel.selectedGroup?.groupColour?.toColorInt()?:Color.BLUE}catch (e:IllegalArgumentException){android.graphics.Color.BLUE})
+          val toolBarColor = try {
+            Color.parseColor("#${groupViewModel.selectedGroup?.groupColour}")
+        } catch (e: IllegalArgumentException) {
+         val attrs =    requireActivity().theme.obtainStyledAttributes(R.style.Theme_ThioChat, intArrayOf(com.google.android.material.R.attr.colorTertiary))
+         val colorDef =  attrs.getColor(0,Color.BLACK)
+         attrs.recycle()
+              colorDef
+        }
+        val toolbarTextColor =   if( ColorUtils.calculateLuminance(toolBarColor)<0.5)Color.WHITE else Color.BLACK
+        binding.toolbar.setBackgroundColor(toolBarColor)
+        binding.toolbar.setTitleTextColor(toolbarTextColor)
+
         //Monitor messages
         fun getMessages (){
             viewLifecycleOwner.lifecycleScope.launch {
@@ -88,10 +121,13 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
 
         //Send Message
         binding.sendButton.setOnClickListener {
+            //Animate the send drawable
+            ( binding.sendButton.drawable as? AnimatedVectorDrawable)?.start()
             val message = binding.messageEt.text
             if (message.isBlank()) return@setOnClickListener
             val text = message.toString()
             groupViewModel.sendMessageToGroup(text)
+            binding.messageEt.text.clear()
         }
         binding.toolbar.setOnClickListener {
           findNavController().navigate(R.id.action_groupMessagesPage_to_groupInfoDialog)
@@ -103,6 +139,8 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
         val menu = binding.toolbar.menu
         val searchMenuItem = menu.findItem(R.id.search_item)
         searchMenuItem.setOnMenuItemClickListener {
+            //Animate the search drawable
+            (it.icon as? AnimatedVectorDrawable)?.start()
             binding.searchEdittext.visibility = if(binding.searchEdittext.visibility == View.GONE) View.VISIBLE else binding.searchEdittext.visibility
             true
         }
@@ -148,7 +186,7 @@ val groupViewModel : GroupsViewModel by hiltNavGraphViewModels<GroupsViewModel>(
     override fun onDestroy() {
         //I want that we return from the group messages page we deselect the selected group
         super.onDestroy()
-        Log.i("Erorro","Destroy called ")
+
         groupViewModel.selectedGroup = null
     }
     suspend fun checkIfUsersFriends(message:GroupMessageDisplayModel):Boolean{

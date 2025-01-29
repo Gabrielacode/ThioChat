@@ -6,6 +6,8 @@ import android.graphics.drawable.ShapeDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -32,8 +34,8 @@ val groupDiffUtil = object :DiffUtil.ItemCallback<GroupDisplayModel>(){
     }
 
 }
-class GroupAdapter( val fragment : Fragment, val onGroupClicked:(GroupDisplayModel)->Unit):ListAdapter<GroupDisplayModel,GroupAdapter.GroupViewHolder>(groupDiffUtil) {
-    class GroupViewHolder(val binding: GroupItemBinding,val fragment :Fragment,val onGroupClicked: (GroupDisplayModel) -> Unit): RecyclerView.ViewHolder(binding.root){
+class GroupAdapter( val fragment : Fragment, val onGroupClicked:(GroupDisplayModel,View)->Unit):ListAdapter<GroupDisplayModel,GroupAdapter.GroupViewHolder>(groupDiffUtil) {
+    class GroupViewHolder(val binding: GroupItemBinding,val fragment :Fragment,val onGroupClicked: (GroupDisplayModel,View) -> Unit): RecyclerView.ViewHolder(binding.root){
         //We are creating a Job (Coroutine ) so that we can store the job that will be created when the flow is be collected
         //We dont want to listen to the same flow when the same data source is not bound so we will cancel the former job on bind again
         var flowJob :Job? =null
@@ -41,6 +43,12 @@ class GroupAdapter( val fragment : Fragment, val onGroupClicked:(GroupDisplayMod
             binding.apply {
                 //If there is a former Job cancel it
                 flowJob?.cancel()
+                //Set the transition name for the shared element transition
+                //It has to be unique
+                root.transitionName ="groupItem${group.groupName}"
+                //For the message
+
+                
                 groupName.text = group.groupName
                 val backGroundDrawable = root.background as GradientDrawable
                 //We need to attach the hash symbol since it it needs
@@ -50,9 +58,14 @@ class GroupAdapter( val fragment : Fragment, val onGroupClicked:(GroupDisplayMod
                     Color.CYAN
                 }
                 backGroundDrawable.setColor(groupColorHex)
+                val luminance = ColorUtils.calculateLuminance(groupColorHex)
+                binding.groupName.setTextColor(if (luminance <0.5)Color.WHITE else Color.BLACK)
+                binding.latestMesssageContent.setTextColor(if (luminance <0.5)Color.WHITE else Color.BLACK)
+                binding.latestMesssageTime.setTextColor(if (luminance <0.5)Color.WHITE else Color.BLACK)
+
                 //
                 root.setOnClickListener {
-                    onGroupClicked(group)
+                    onGroupClicked(group,it)
                 }
             }
             //Here we will list for the flow Of Messages
@@ -70,7 +83,10 @@ class GroupAdapter( val fragment : Fragment, val onGroupClicked:(GroupDisplayMod
                     binding.latestMesssageTime.text = dateString
                 }}
             }
-        }}
+            fragment.startPostponedEnterTransition()
+        }
+
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {

@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -32,9 +33,10 @@ class ExploreGroupViewHolder(val binding:ExploreGroupItemBinding, val onJoinButt
                 Color.parseColor("#${group.groupColour}")}catch (e:IllegalArgumentException){
                 Color.CYAN}
             backGroundDrawable.setColor(groupColorHex)
-            if (groupColorHex in (android.graphics.Color.BLACK..android.graphics.Color.DKGRAY)) {
-                groupName.setTextColor(android.graphics.Color.WHITE)
-            } else groupName.setTextColor(android.graphics.Color.BLACK)
+            val luminance = ColorUtils.calculateLuminance(groupColorHex)
+            binding.groupName.apply{
+                setTextColor(if (luminance <0.5)Color.WHITE else Color.BLACK)
+            }
 
             addGroup.setOnClickListener {
                 onJoinButtonClick(group)

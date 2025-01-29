@@ -58,7 +58,9 @@ class GroupDAO @Inject constructor() {
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 else {
-                    onFailure(e.message ?: "Error")
+                    withContext(Dispatchers.Main.immediate){
+                        onFailure(e.message ?: "Error")
+                    }
                     return@withContext false
                 }
             }
@@ -157,7 +159,6 @@ class GroupDAO @Inject constructor() {
                val result = countQuery.get(AggregateSource.SERVER).await()
                OperationResult.Success(result.get(AggregateField.count()))
            }catch (e:Exception){
-               Log.i("Count",e.message?:"Error")
                if (e is CancellationException) throw e
                else OperationResult.Failure(e)
            }

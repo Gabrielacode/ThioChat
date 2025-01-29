@@ -71,7 +71,7 @@ class FriendMessageAdapter():ListAdapter<FriendMessageDisplayModel,FriendMessage
             holder.bind(getItem(position))
         }
         fun resetListToStandard(){
-            Log.i("SearchList",standardCurrentList.joinToString { it.searchQuery.toString() })
+
             standardCurrentList.forEach { it.searchQuery = null }
             submitList(standardCurrentList)
         }
@@ -120,7 +120,7 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
              val dateString =  if (time != null)formatter.format(time) else "No Date"
              timeSent.text = dateString
              if (!message.searchQuery.isNullOrBlank() ){
-                 Log.i("SearchQuery","Is Search Query Null After Search ${message.searchQuery}")
+
                  highlightSearchedText(message.searchQuery!!)
              }
          }
@@ -139,7 +139,7 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
                 val range = it.range
                 val max = range.maxOrNull()?:0
                 val min = range.minOrNull()?:0
-                Log.i("SearchQuery","First : ${min}, Last : $max")
+
                 //If we remove all characters then the search query becomes empty space and then when we regex it to find it index it returns -1 which we dont want
                 if(min <0 || max < 0) return
                 //Now we will get the highest and lowest ranges
@@ -164,16 +164,11 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
                 val dateString =  if (time != null)formatter.format(time) else "No Date"
                 timeSent.text = dateString
                 if (!message.searchQuery.isNullOrBlank()){
-                    Log.i("SearchQuery","Is Search Query Null After Search ${message.searchQuery}")
+
                     highlightSearchedText(message.searchQuery!!)
                 }
 
-                val inputBitmap = AppCompatResources.getDrawable(root.context, R.drawable.cancel_icon)?.toBitmapOrNull()
-                if (inputBitmap != null){
-                  val bitmap =   Toolkit.blur(inputBitmap,25)
-                    chatLayout.background = bitmap.toDrawable(chatLayout.resources)
-                Log.i("Blur", bitmap.byteCount.toString())
-                }
+
             }
 
         }
@@ -191,7 +186,7 @@ open class FriendMessagesViewHolder(val view: View): RecyclerView.ViewHolder(vie
                 val range = it.range
                 val max = range.maxOrNull()?:0
                 val min = range.minOrNull()?:0
-                Log.i("SearchQuery","First : ${min}, Last : $max")
+
                 //If we remove all characters then the search query becomes empty space and then when we regex it to find it index it returns -1 which we dont want
                 if(min <0 || max < 0) return
                 //Now we will get the highest and lowest ranges

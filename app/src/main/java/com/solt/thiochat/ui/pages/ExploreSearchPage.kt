@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -58,8 +59,9 @@ class ExploreSearchPage: BottomSheetDialogFragment() {
         }
         val activity = requireActivity() as MainActivity
         val searchAdapter = ExploreSearchAdapter( this, {group-> exploreViewModel.joinGroup(group,{activity.showMessageSuccess(it)},{activity.showMessageFailure(it)}) })
-        {  groupViewModel.selectedGroup = it
-            findNavController().navigate(R.id.action_exploreSearchPage_to_groupMessagesPage)}
+        {  model,layout -> groupViewModel.selectedGroup = model
+            val sharedElementTransition = FragmentNavigatorExtras(layout to "groupName")
+            findNavController().navigate(R.id.action_exploreSearchPage_to_groupMessagesPage,null,sharedElementTransition)}
         binding.searchBar.addTextChangedListener(textWatcher)
         binding.listOfFriends.apply {
             layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)

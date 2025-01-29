@@ -2,7 +2,7 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/friendsPage" android:title="Friends" />
-    <item android:id="@+id/groupsPage" android:title="Groups"/>
-    <item android:id="@+id/explorePage" android:title="Explore"/>
+        android:id="@+id/friendsPage" android:title="Friends" android:icon="@drawable/friends_icons" />
+    <item android:id="@+id/groupsPage" android:title="Groups" android:icon="@drawable/group_icon"/>
+    <item android:id="@+id/explorePage" android:title="Explore" android:icon="@drawable/explore_icon"/>
 </menu>

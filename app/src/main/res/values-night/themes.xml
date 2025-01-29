@@ -1,9 +1,40 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.ThioChat" parent="Theme.Material3.DayNight.NoActionBar">
-       <item name="colorPrimary">@color/purple</item>
-        <item name="colorPrimaryDark">@color/light_purple</item>
+       <item name="colorPrimary">@color/light_purple</item>
+        <item name="colorPrimaryDark">@color/purple</item>
+        <item name="colorPrimaryInverse">@color/blue</item>
+        <item name="colorSecondary">@color/lighter_purple</item>
+        <item name="colorSurface">@color/dark_purple</item>
+        <item name="colorSurfaceInverse">@color/white_blue</item>
+        <item name="colorSurfaceContainer">@color/medium_dark_purple</item>
+        <item name="android:colorBackground">?colorSurface</item>
         <item name="colorOnPrimary">@color/white_purple</item>
+        <item name="android:textColor">?colorOnPrimary</item>
+        <item name="toolbarStyle">@style/ToolBarStyle</item>
+        <item name="appBarLayoutStyle">@style/ToolBarStyle</item>
+        <item name="materialButtonStyle">@style/ButtonNormal</item>
+        <item name="bottomNavigationStyle">@style/BottomNavStyle</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="bottomSheetDialogTheme">@style/SheetsStyle</item>
+        <item name="backgroundTransparent">@color/dark_purple_transparent</item>
+        <item name="whiteTransparent">@color/light_purple_transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowContentTransitions">true</item>
+
 
     </style>
+
+    <style name="ToolBarStyle" parent="Widget.Material3.Toolbar">
+        <item name="elevation">5dp</item>
+        <item name="android:background">?attr/colorSurfaceContainer</item>
+
+    </style>
+    <style name="BottomNavStyle" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">?attr/colorSurfaceContainer</item>
+        <item name="elevation">5dp</item>
+    </style>
+
+
+
 </resources>

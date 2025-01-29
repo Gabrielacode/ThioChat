@@ -18,6 +18,7 @@
             android:id="@+id/group_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito"
             android:hint="Group Name"
             android:inputType="text"
             android:maxLines="6"
@@ -46,14 +47,14 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/none_mode"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/ButtonNormal.Outlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="None" />
+               android:text="None" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/request_mode"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/ButtonNormal.Outlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Request" />

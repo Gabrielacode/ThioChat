@@ -50,7 +50,7 @@ class AddGroupDialog: DialogFragment() {
                 val backgroundDrawable = binding.mainLayout.background as GradientDrawable
                 backgroundDrawable.apply {
                     colors = intArrayOf(it.color,it.color)
-                }
+             }
                 //We might check whether it is light and dark and change the text color
                 val luminance = ColorUtils.calculateLuminance(it.color)
                 binding.groupName.apply{

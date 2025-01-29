@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -26,6 +27,29 @@ class GroupSearchPage:BottomSheetDialogFragment() {
     //This will be the flow of search queries like in the friends search page
     val flowOfQuery = MutableStateFlow("")
     val groupViewModel by hiltNavGraphViewModels<GroupsViewModel>(R.id.app_nav_graph)
+    lateinit var groupAdapter:GroupAdapter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val activity = requireActivity() as MainActivity
+        groupAdapter = GroupAdapter(this){model,layout->
+            groupViewModel.selectedGroup = model
+            val sharedElementTransition = FragmentNavigatorExtras(layout to "groupItem${model.groupName}")
+            findNavController().navigate(R.id.action_groupSearchPage_to_groupMessagesPage,null,null,sharedElementTransition)
+        }
+        lifecycleScope.launch {
+            groupViewModel.getGroupsUserIsIn { activity.showMessageFailure(it) }?.collectLatest {
+
+                groupAdapter.submitList(it)
+            }
+        }
+       lifecycleScope.launch {
+            flowOfQuery.collectLatest {
+                groupViewModel.searchForGroup(it)?.collectLatest { groups ->
+                    groupAdapter.submitList(groups)
+
+                }
+            }
+    }}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,30 +77,14 @@ class GroupSearchPage:BottomSheetDialogFragment() {
             }
 
         }
-        val activity = requireActivity() as MainActivity
-        val groupAdapter = GroupAdapter(this){
-            groupViewModel.selectedGroup = it
-            findNavController().navigate(R.id.action_groupSearchPage_to_groupMessagesPage)
-        }
+
         binding.searchBar.addTextChangedListener(textWatcher)
         binding.listOfFriends.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             adapter = groupAdapter
         }
-        //This will be displayed first
-        viewLifecycleOwner.lifecycleScope.launch {
-            groupViewModel.getGroupsUserIsIn{ activity.showMessageFailure(it) }?.collectLatest {
-                groupAdapter.submitList(it)
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            flowOfQuery.collectLatest {
-                groupViewModel.searchForGroup(it)?.collectLatest { groups ->
-                    groupAdapter.submitList(groups)
 
-                }
-            }
+
         }
 
     }
-}

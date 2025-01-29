@@ -1,5 +1,6 @@
 package com.solt.thiochat
 
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -17,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.solt.thiochat.data.OperationResult
 import com.solt.thiochat.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,13 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         installSplashScreen()
-//        StrictMode.setThreadPolicy(
-//            StrictMode.ThreadPolicy.Builder()
-//                .detectAll()
-//                .penaltyLog()
-//                .build()
-//        )
-//        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
+
        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
@@ -47,13 +43,17 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener{controller,destination,bundle,->
             when(destination.id){
-                R.id.authenticationFragment , R.id.groupMessagesPage->{
-                    binding.bottomNavigationView.visibility = View.GONE
+                R.id.friendsPage , R.id.groupsPage,R.id.explorePage->{
+                    binding.bottomNavigationView.visibility = View.VISIBLE
                 }
 
-                else-> binding.bottomNavigationView.visibility = View.VISIBLE
+                else-> binding.bottomNavigationView.visibility = View.GONE
             }
         }
+
+        //We need to set the tint of the menu item to null for us to see the tints we used
+        binding.bottomNavigationView.itemIconTintList = null
+        //It worked
 
 
     }

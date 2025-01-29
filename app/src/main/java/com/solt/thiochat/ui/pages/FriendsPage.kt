@@ -1,6 +1,7 @@
 package com.solt.thiochat.ui.pages
 
 import android.graphics.BitmapFactory
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
@@ -76,15 +77,12 @@ class FriendsPage: Fragment() {
         val menu = binding.toolbar.menu
         val searchMenuItem = menu.findItem(R.id.search_item)
        searchMenuItem.setOnMenuItemClickListener {
+           //Animate the search drawable
+           (it.icon as?AnimatedVectorDrawable)?.start()
             findNavController().navigate(R.id.action_friendsPage_to_friendSearchPage)
            true
         }
-       val leaveMenuItem = menu.findItem(R.id.sign_out)
-        leaveMenuItem.setOnMenuItemClickListener {
-            authViewModel.signOut()
-            findNavController().popBackStack()
-            true
-        }
+
         //Get user details
         userViewModel.getUserDetails({
             binding.toolbar.title = it.userName
@@ -96,7 +94,7 @@ class FriendsPage: Fragment() {
 
              friendsViewModel.getFriends { activity.showMessageFailure(it) }
                  ?.collectLatest {
-                Log.i("stateflow",it.toString())
+
                 friendAdapter.submitList(it)
             }
         }

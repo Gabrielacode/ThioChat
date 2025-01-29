@@ -86,7 +86,7 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        Log.i("SearchQuery","Bind View Holder called for ${getItem(position).text}")
+
         val item = getItem(position)
         holder.bind(item)
     }
@@ -188,7 +188,7 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
                 }
             }}
             if (!message.searchQuery.isNullOrBlank()){
-                Log.i("SearchQuery","Is Search Query Null After Search ${message.searchQuery?.isBlank()}")
+
                 highlightSearchedText(message.searchQuery!!)
             }
         }
@@ -207,7 +207,7 @@ class GroupMessagesAdapter(val fragment: Fragment,val checkIfUsersAreFriends: su
              val range = it.range
              val max = range.maxOrNull()?:0
              val min = range.minOrNull()?:0
-             Log.i("SearchQuery"," Item : $message First : ${min}, Last : $max")
+
              //If we remove all characters then the search query becomes empty space and then when we regex it to find it index it returns -1 which we dont want
              if(min <0 || max < 0) return
              //Now we will get the highest and lowest ranges
@@ -266,7 +266,7 @@ class NonUserMessageViewHolder( val fragment: Fragment,val binding: NonUserMessa
                     }
                 }}
             requestBinding.root.setOnClickListener {
-                    Log.i("gg","Launch is called")
+
                     onSendRequest(message)
                     bottomModalDialog.dismiss()
             }
@@ -291,7 +291,7 @@ class NonUserMessageViewHolder( val fragment: Fragment,val binding: NonUserMessa
             val range = it.range
             val max = range.maxOrNull()?:0
             val min = range.minOrNull()?:0
-            Log.i("SearchQuery"," Item : $message First : ${min}, Last : $max")
+
             //If we remove all characters then the search query becomes empty space and then when we regex it to find it index it returns -1 which we dont want
             if(min <0 || max < 0) return
             //Now we will get the highest and lowest ranges

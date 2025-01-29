@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="180dp"
+    android:layout_width="190dp"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="8dp"
+    android:paddingHorizontal="10dp"
     android:paddingBottom="12dp"
     android:background="@drawable/group_item_background"
 
@@ -15,10 +15,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif"
+        android:layout_marginStart="4dp"
+        android:fontFamily="@font/nunito"
         android:gravity="bottom"
         android:textSize="20sp"
         android:textStyle="bold"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="TextView" />
@@ -37,6 +39,7 @@
             android:id="@+id/latest_messsage_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/arimo"
             tools:text="He was poopdksdjd in the toilert "/>
         <TextView
             android:id="@+id/latest_messsage_time"
@@ -44,6 +47,7 @@
             android:layout_height="wrap_content"
             tools:text="22:34"
             android:textStyle="bold"
+            android:textSize="10sp"
             android:layout_below="@+id/latest_messsage_content"
             android:layout_alignParentEnd="true"/>
     </RelativeLayout>

@@ -1,15 +1,22 @@
 package com.solt.thiochat.ui.pages
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.renderscript.Toolkit
 import com.solt.thiochat.MainActivity
 import com.solt.thiochat.R
 import com.solt.thiochat.databinding.ExplorePageBinding
@@ -45,6 +52,8 @@ class ExplorePage: Fragment() {
         //Then we will set the item to open the search click listener when expanded
         val menu = binding.toolbar.menu
         val searchItem = menu.findItem(R.id.search_item).setOnMenuItemClickListener {
+            //Animate the search drawable
+            (it.icon as? AnimatedVectorDrawable)?.start()
             findNavController().navigate(R.id.action_explorePage_to_exploreSearchPage)
             true
         }
@@ -54,6 +63,7 @@ class ExplorePage: Fragment() {
                 exploreAdapter.submitList(it)
             }
         }
+
 
     }
 }

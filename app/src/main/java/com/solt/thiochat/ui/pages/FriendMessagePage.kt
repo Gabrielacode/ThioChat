@@ -1,6 +1,7 @@
 package com.solt.thiochat.ui.pages
 
 import android.graphics.Color
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -51,7 +52,7 @@ class FriendMessagePage: Fragment() {
             adapter = friendMessagesAdapter
         }
         binding.toolbar.title = friendsViewModel.selectedFriend?.userName?:"Friend Not None"
-        binding.toolbar.setBackgroundColor(Color.WHITE)
+
 
         viewLifecycleOwner.lifecycleScope.launch {
             friendsViewModel.getMessagesWithCurrentFriend { activity.showMessageFailure(it) }?.collectLatest {
@@ -61,10 +62,12 @@ class FriendMessagePage: Fragment() {
         }
         //Send Message
         binding.sendButton.setOnClickListener {
+            ( binding.sendButton.drawable as? AnimatedVectorDrawable)?.start()
             val message = binding.messageEt.text
             if (message.isBlank()) return@setOnClickListener
             val text = message.toString()
             friendsViewModel.sendMessage(text)
+            binding.messageEt.text.clear()
         }
         //Now we want that when the user clicks the search
         //The edit text becomes visible
@@ -72,6 +75,8 @@ class FriendMessagePage: Fragment() {
         val menu = binding.toolbar.menu
         val searchMenuItem = menu.findItem(R.id.search_item)
         searchMenuItem.setOnMenuItemClickListener {
+            //Animate the search drawable
+            (it.icon as? AnimatedVectorDrawable)?.start()
             binding.searchEdittext.visibility = if(binding.searchEdittext.visibility == View.GONE) View.VISIBLE else binding.searchEdittext.visibility
             true
         }

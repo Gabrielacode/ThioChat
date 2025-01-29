@@ -53,7 +53,7 @@ class Authentication  @Inject constructor( ) {
 
 
     fun isUserSigned():Boolean{
-        Log.i("Error","Current User ${currentUser.toString()}")
+
      return currentUser != null
     }
     fun getGoogleServerClientId () = com.solt.thiochat.BuildConfig.serverClientId
@@ -162,10 +162,10 @@ class Authentication  @Inject constructor( ) {
                     OperationResult.Failure(IllegalStateException("This type of credential is not required "))
                 }
             } catch (e: CancellationException) {
-                Log.i("Error",e.toString())
+
                 throw e
             }catch (e:Exception){
-                Log.i("Error",e.toString())
+
 
                 OperationResult.Failure(e)
             }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/send">
+    <target
+        android:name="shape">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="translateX"
+                    android:duration="300"
+                    android:valueFrom="0"
+                    android:valueTo="270"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/anticipate"/>
+                    />
+                <objectAnimator
+                    android:propertyName="translateX"
+                    android:startOffset = "300"
+                    android:duration="400"
+                    android:valueFrom="-270"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/overshoot"/>
+                />
+            </set>
+    </aapt:attr>
+    </target>
+
+</animated-vector>

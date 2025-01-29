@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+ <item  android:id = "@+id/not_selected" android:state_checked="false" android:drawable="@drawable/friend_icon_dark"/>
+ <item android:id = "@+id/selected" android:state_checked="true" android:drawable="@drawable/friend_icon_activated"/>
+ <transition
+     android:fromId="@id/not_selected"
+     android:toId="@id/selected"  android:drawable="@drawable/friends_transition_dark" android:reversible="false"/>
+</animated-selector>

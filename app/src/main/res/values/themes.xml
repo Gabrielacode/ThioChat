@@ -1,24 +1,76 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.ThioChat" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/deep_blue</item>
+        <item name="colorPrimaryInverse">@color/light_purple</item>
+        <item name="colorSecondary">@color/light_blue</item>
+        <item name="colorSurface">@color/white_blue</item>
+        <item name="colorSurfaceInverse">@color/dark_purple</item>
+        <item name="colorSurfaceContainer">@color/medium_light_blue</item>
+        <item name="android:colorBackground">?colorSurface</item>
+        <item name="colorOnPrimary">@color/dark_blue</item>
+        <item name="android:textColor">?colorOnPrimary</item>
+        <item name="toolbarStyle">@style/ToolBarStyle</item>
+        <item name="appBarLayoutStyle">@style/ToolBarStyle</item>
+        <item name="materialButtonStyle">@style/ButtonNormal</item>
+        <item name="bottomNavigationStyle">@style/BottomNavStyle</item>
+        <item name="android:navigationBarColor">?backgroundTransparent</item>
+        <item name="backgroundTransparent">@color/light_blue_transparent</item>
+        <item name="whiteTransparent">@color/white_blue_transparent</item>
+        <item name="bottomSheetDialogTheme">@style/SheetsStyle</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowContentTransitions">true</item>
+
 
     </style>
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <!-- Set the splash screen background, animated icon, and animation
-        duration. -->
-        <item name="windowSplashScreenBackground">@color/purple</item>
-        /...
-        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
-             drawable. One of these is required. -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
-        <!-- Required for animated icons. -->
-        <item name="windowSplashScreenAnimationDuration">200</item>
+    <style name="SheetsStyle" parent="ThemeOverlay.Material3.BottomSheetDialog">
+<!--        I Have cried days and nights just to change the sheet color -->
+        <item name="bottomSheetStyle">@style/SheetsStyle.Sheet</item>
+        <item name="elevation">20dp</item>
+    </style>
+    <style name="SheetsStyle.Sheet" parent="Widget.Material3.BottomSheet.Modal">
+        <!--        I Have cried days and nights just to change the sheet color -->
+       <item name="backgroundTint">?colorSecondary</item>
+    </style>
 
-        <!-- Set the theme of the Activity that directly follows your splash
-        screen. This is required. -->
-        <item name="postSplashScreenTheme">@style/Theme.ThioChat</item>
+
+    <style name="ButtonNormal.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textAppearance">@style/GeneralTextAppearance</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="ButtonNormal" parent="Widget.Material3.Button">
+      <item name="android:textAppearance">@style/GeneralTextAppearance</item>
+        <item name="android:textSize">16sp</item>
+        <item name="backgroundTint">?attr/colorSecondary</item>
     </style>
     <style name="Theme.ThioChat" parent="Base.Theme.ThioChat" />
+    <style name="AppBarTitleAppearance" parent="TextAppearance.AppCompat.Menu">
+       <item name="android:fontFamily">@font/quicksand_bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">?colorSecondary</item>
+    </style>
+    <style name="NormalBarTitleAppearance" parent="TextAppearance.AppCompat.Menu">
+        <item name="android:fontFamily">@font/nunito</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">?colorSecondary</item>
+    </style>
+    <style name="GeneralTextAppearance" >
+        <item name="android:fontFamily">@font/nunito</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="ActiveTextAppearance" parent="GeneralTextAppearance">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="ToolBarStyle" parent="Widget.Material3.Toolbar">
+        <item name="elevation">5dp</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="android:background">?attr/colorSurface</item>
+
+    </style>
+    <style name="BottomNavStyle" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">?attr/colorSurfaceContainer</item>
+        <item name="elevation">5dp</item>
+    </style>
+
 </resources>

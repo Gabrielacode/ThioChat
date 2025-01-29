@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:fontFamily="@font/nunito"
         app:layout_constraintEnd_toStartOf="@+id/time_sent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
+        android:fontFamily="@font/arimo"
         app:layout_constraintEnd_toStartOf="@+id/time_sent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/friend_name"
@@ -35,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         tools:text="TextView"
-        android:textStyle="italic"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/latest_message"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

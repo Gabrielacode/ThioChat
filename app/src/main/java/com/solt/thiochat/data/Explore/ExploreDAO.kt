@@ -101,15 +101,13 @@ class ExploreDAO @Inject constructor() {
             documents
         }
         val flowsOfSearchGroups = flowOfGroups.combine(flowOfGroupsUserIsIn){allGroupsSearched,userGroups ->
-            Log.i("Flows","All Groups : ${allGroupsSearched.joinToString { "Id : ${it.groupName} Name: ${it.documentId}" }}")
-            Log.i("Flows","Groups User In  : ${userGroups.joinToString { "Id : ${it.groupName} Name: ${it.documentId}" }}")
+
          val finalList =   allGroupsSearched.map {
                 //If it is not of type UserInGroup then not in NotUserInGroup
                 if (userGroups.contains(it)) GroupDisplayModel.UserInGroup(it.documentId,it.groupName,it.groupColour,it.modeOfAcceptance)
                 else GroupDisplayModel.UserNotInGroup(it.documentId,it.groupName,it.groupColour,it.modeOfAcceptance)
             }
 
-            Log.i("Flows ", finalList.joinToString { it.groupName })
            finalList
         }
         return flowsOfSearchGroups
