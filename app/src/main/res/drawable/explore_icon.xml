@@ -4,5 +4,5 @@
     <item android:id ="@+id/selected" android:state_checked="true" android:drawable="@drawable/explore_active"/>
     <transition
         android:fromId="@id/unselected"
-        android:toId="@id/selected" android:drawable="@drawable/explore_transition_dark" android:reversible="false"/>
+        android:toId="@id/selected" android:drawable="@drawable/explore_transition_light" android:reversible="false"/>
 </animated-selector>

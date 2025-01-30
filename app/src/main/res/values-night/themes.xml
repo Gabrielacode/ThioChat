@@ -8,6 +8,7 @@
         <item name="colorSurface">@color/dark_purple</item>
         <item name="colorSurfaceInverse">@color/white_blue</item>
         <item name="colorSurfaceContainer">@color/medium_dark_purple</item>
+        <item name="colorSurfaceContainerHigh">@color/dark_deep_purple</item>
         <item name="android:colorBackground">?colorSurface</item>
         <item name="colorOnPrimary">@color/white_purple</item>
         <item name="android:textColor">?colorOnPrimary</item>
@@ -21,6 +22,7 @@
         <item name="whiteTransparent">@color/light_purple_transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="dialogTheme">@style/Dialog.Normal</item>
 
 
     </style>

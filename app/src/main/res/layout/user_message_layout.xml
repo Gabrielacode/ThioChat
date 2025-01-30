@@ -18,7 +18,8 @@
         android:minWidth="50dp"
         android:layout_gravity="end"
         android:layout_marginHorizontal="8dp"
-        android:paddingHorizontal="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="4dp"
         android:paddingVertical="4dp">
 
         <TextView

@@ -34,12 +34,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    8<com.google.android.material.bottomnavigation.BottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="60dp"
-        app:itemIconSize="20dp"
+        app:itemIconSize="24dp"
+        app:itemPaddingBottom="4dp"
         app:itemBackground="@android:color/transparent"
         app:itemRippleColor="?colorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -8,6 +8,7 @@
         <item name="colorSurface">@color/white_blue</item>
         <item name="colorSurfaceInverse">@color/dark_purple</item>
         <item name="colorSurfaceContainer">@color/medium_light_blue</item>
+        <item name="colorSurfaceContainerHigh">@color/deep_dark_blue</item>
         <item name="android:colorBackground">?colorSurface</item>
         <item name="colorOnPrimary">@color/dark_blue</item>
         <item name="android:textColor">?colorOnPrimary</item>
@@ -21,6 +22,8 @@
         <item name="bottomSheetDialogTheme">@style/SheetsStyle</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="dialogTheme">@style/Dialog.Normal</item>
+
 
 
     </style>
@@ -28,10 +31,23 @@
 <!--        I Have cried days and nights just to change the sheet color -->
         <item name="bottomSheetStyle">@style/SheetsStyle.Sheet</item>
         <item name="elevation">20dp</item>
+        <item name="android:textColor">?colorSecondary</item>
+        <item name="editTextStyle">@style/EditText.Dialog</item>
     </style>
+
     <style name="SheetsStyle.Sheet" parent="Widget.Material3.BottomSheet.Modal">
         <!--        I Have cried days and nights just to change the sheet color -->
-       <item name="backgroundTint">?colorSecondary</item>
+       <item name="backgroundTint">?colorSurfaceContainerHigh</item>
+    </style>
+    <style name="Dialog.Normal" parent="ThemeOverlay.Material3.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="dialogCornerRadius">12dp</item>
+    </style>
+    <style name="EditText.Dialog" parent="ThemeOverlay.Material3.TextInputEditText">
+        <item name="android:textColorPrimaryDisableOnly">?colorOnSurface</item>
+        <item name="android:textColorPrimary">?colorPrimaryDark</item>
     </style>
 
 

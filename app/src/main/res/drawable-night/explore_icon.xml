@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item  android:id = "@+id/unselected" android:state_checked="false" android:drawable="@drawable/explore_icon_light"/>
+    <item  android:id = "@+id/unselected" android:state_checked="false" android:drawable="@drawable/explore_icon_dark"/>
     <item android:id ="@+id/selected" android:state_checked="true" android:drawable="@drawable/explore_active"/>
     <transition
         android:fromId="@id/unselected"

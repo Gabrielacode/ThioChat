@@ -88,7 +88,9 @@ class GroupsPage:Fragment() {
         }
 
         binding.listOfGroups.apply {
-            layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL).apply {
+                this.gapStrategy =StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+            }
             adapter = groupAdapter
         }
         //Listen for groups

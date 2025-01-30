@@ -60,8 +60,8 @@ class ExploreSearchPage: BottomSheetDialogFragment() {
         val activity = requireActivity() as MainActivity
         val searchAdapter = ExploreSearchAdapter( this, {group-> exploreViewModel.joinGroup(group,{activity.showMessageSuccess(it)},{activity.showMessageFailure(it)}) })
         {  model,layout -> groupViewModel.selectedGroup = model
-            val sharedElementTransition = FragmentNavigatorExtras(layout to "groupName")
-            findNavController().navigate(R.id.action_exploreSearchPage_to_groupMessagesPage,null,sharedElementTransition)}
+            val sharedElementTransition = FragmentNavigatorExtras(layout to "groupName${model.groupName}")
+            findNavController().navigate(R.id.action_exploreSearchPage_to_groupMessagesPage,null,null,sharedElementTransition)}
         binding.searchBar.addTextChangedListener(textWatcher)
         binding.listOfFriends.apply {
             layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)

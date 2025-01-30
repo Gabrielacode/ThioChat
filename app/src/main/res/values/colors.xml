@@ -15,6 +15,7 @@
     <color name="dark_purple_transparent">#D8170B1E</color>
     <color name="lighter_purple">#C097D8</color>
     <color name="medium_dark_purple">#22112C</color>
+    <color name="dark_deep_purple">#150320</color>
     <color name="blue">#3B5DA5</color>
     <color name="white_blue">#F0F3FA</color>
     <color name="white_blue_transparent">#C3F0F3FA</color>
@@ -22,7 +23,9 @@
     <color name="light_blue_transparent">#A1D3DCEE</color>
     <color name="deep_blue">#0D3296</color>
     <color name="dark_blue">#0B111E</color>
+    <color name="deep_dark_blue">#040C23</color>
     <color name="medium_light_blue">#D3DCEE</color>
+
     <attr name="backgroundTransparent" format="color"/>
     <attr name="whiteTransparent" format="color"/>
 </resources>
