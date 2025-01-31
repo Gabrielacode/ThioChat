@@ -63,7 +63,7 @@ class FriendSearchPage:BottomSheetDialogFragment() {
         //We will sort based on the current friend
         val friendsAdapter = FriendsAdapter(this){
             friendsViewModel.selectedFriend = FriendModel(it.userId,it.userName)
-            findNavController().navigate(R.id.action_friendsPage_to_friendMessagePage)
+            findNavController().navigate(R.id.action_friendSearchPage_to_friendMessagePage)
         }
           binding.searchBar.addTextChangedListener(textWatcher)
           binding.listOfFriends.apply {

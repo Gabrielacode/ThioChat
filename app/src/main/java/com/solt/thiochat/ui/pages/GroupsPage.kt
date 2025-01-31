@@ -105,6 +105,12 @@ class GroupsPage:Fragment() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        //If the list is empty continue with the start animation
+       if ( groupAdapter.currentList.isEmpty()) startPostponedEnterTransition()
+    }
+
 
 
 }
